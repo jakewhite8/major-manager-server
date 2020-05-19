@@ -30,7 +30,7 @@ module.exports = {
 ```
 npm start
 ```
-### Test
+### Testing
 * In order to run tests, a config file has to be made that stores a user's email and password 
 /src/config/test.config.js:
 ```
