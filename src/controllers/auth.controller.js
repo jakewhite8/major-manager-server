@@ -65,6 +65,7 @@ exports.signin = (req, res) => {
       res.status(200).send({
         id: data.id,
         email: data.email,
+        team_name: data.team_name,
         roles,
         accessToken: token,
       });
