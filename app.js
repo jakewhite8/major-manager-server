@@ -21,6 +21,7 @@ app.get('/', (req, res) => {
 
 require('./src/routes/user.routes.js')(app);
 require('./src/routes/auth.routes.js')(app);
+require('./src/routes/tournament.routes.js')(app);
 
 // Add roles to the role table
 // const db = require('./src/models');
