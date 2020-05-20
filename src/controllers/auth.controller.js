@@ -59,7 +59,7 @@ exports.signin = (req, res) => {
       }
 
       const roles = [];
-      for (let i = 0; i < roleData.length - 1; i += 1) {
+      for (let i = 0; i < roleData.length; i += 1) {
         roles.push(roleData[i].roleId);
       }
       res.status(200).send({
