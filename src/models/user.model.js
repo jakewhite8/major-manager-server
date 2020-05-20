@@ -1,6 +1,6 @@
 module.exports = (connection) => {
   const User = function (user) {
-    this.username = user.username;
+    this.team_name = user.team_name;
     this.email = user.email;
     this.password = user.password;
   };
