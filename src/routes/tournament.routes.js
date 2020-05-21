@@ -15,4 +15,10 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     controller.activeTournamentsPage,
   );
+
+  app.get(
+    '/api/v1/tournament_player_data/:id',
+    [authJwt.verifyToken],
+    controller.tournamentPlayerData,
+  );
 };
