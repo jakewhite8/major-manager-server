@@ -21,4 +21,10 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     controller.tournamentPlayerData,
   );
+
+  app.post(
+    '/api/v1/set_team',
+    [authJwt.verifyToken],
+    controller.setTeam,
+  );
 };

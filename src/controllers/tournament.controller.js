@@ -14,6 +14,19 @@ exports.activeTournamentsPage = (req, res) => {
   });
 };
 
+exports.setTeam = (req, res) => {
+  Tournament.createTeam(req.body.userId, req.body.tournamentId, req.body.selectedPlayers,
+    (err, data) => {
+      if (err) {
+        res.send({
+          message: 'Error finding active tournaments',
+        });
+        return;
+      }
+      res.send(data);
+    });
+};
+
 exports.tournamentPlayerData = (req, res) => {
   Tournament.findPlayerData(req.params.id, (tournamentPlayerErr, tournamentPlayerData) => {
     if (tournamentPlayerErr) {
@@ -44,9 +57,11 @@ exports.tournamentPlayerData = (req, res) => {
           });
           return;
         }
-        // join the tier and player data from the players_tournaments table
+        // Join the tier and player data from the players_tournaments table
         // with the first_name and last_name that was retrieved from the player table
         // with the name that was retrieved from the tournaments table
+        // - may want to move all of this organizing of data if we use this funciton
+        // in a scenario that doesnt need it
         const merged = [];
 
         for (let i = 0; i < tournamentPlayerData.length; i += 1) {
@@ -58,9 +73,26 @@ exports.tournamentPlayerData = (req, res) => {
           });
         }
 
+        // Return player objects to UI in an array grouped by tiers
+        // ex) All tier-1 players are found in sortedArray[0]
+        // ex) All tier-2 players are found in sortedArray[1]
+        merged.sort((a, b) => a.tier - b.tier);
+        const sortedArray = [[]];
+        let array = 0;
+        for (let index = 0; index < merged.length; index += 1) {
+          if (!sortedArray[array][0]) {
+            sortedArray[array].push(merged[index]);
+          } else if (sortedArray[array][0].tier === merged[index].tier) {
+            sortedArray[array].push(merged[index]);
+          } else {
+            array += 1;
+            sortedArray[array] = [merged[index]];
+          }
+        }
+
         const tournamentPlayerObj = {
           tournamentName: tournamentNameData.name,
-          playerData: merged,
+          playerData: sortedArray,
         };
         res.send(tournamentPlayerObj);
       });
