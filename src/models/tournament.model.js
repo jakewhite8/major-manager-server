@@ -5,7 +5,7 @@ module.exports = (connection) => {
   };
 
   Tournament.findActive = (result) => {
-    connection.query('SELECT * FROM tournaments', (err, res) => {
+    connection.query('SELECT * FROM tournaments WHERE DATE(NOW()) < DATE(start_date)', (err, res) => {
       if (err) {
         console.log('Error: ', err);
         result(err, null);
@@ -16,6 +16,40 @@ module.exports = (connection) => {
         return;
       }
       result({ kind: 'not found' }, null);
+    });
+  };
+
+  Tournament.findActiveTournamentUser = (id, result) => {
+    // Get list of tournaments a user is in
+    connection.query(`SELECT * FROM users_tournaments WHERE userId = ${id}`, (usersTournamentsErr, usersTournamentsRes) => {
+      if (usersTournamentsErr) {
+        console.log('Error: ', usersTournamentsErr);
+        result(usersTournamentsErr, null);
+        return;
+      }
+      if (usersTournamentsRes.length) {
+        // Make an array of the tournament ids the user is a part of
+        const tournamentIds = [];
+        for (let i = 0; i < usersTournamentsRes.length; i += 1) {
+          tournamentIds.push(usersTournamentsRes[i].tournamentId);
+        }
+        // Get the details of the tournaments a user is in
+        connection.query(`SELECT * FROM tournaments WHERE id IN (${tournamentIds.join(', ')})`, (tournamentsErr, tournamentRes) => {
+          if (tournamentsErr) {
+            console.log('Error: ', tournamentsErr);
+            result(tournamentsErr, null);
+            return;
+          }
+          if (tournamentRes.length) {
+            result(null, tournamentRes);
+            return;
+          }
+          result({ kind: 'not found' }, null);
+        });
+      } else {
+        console.log('User is not in any tournaments');
+        result(null, []);
+      }
     });
   };
 

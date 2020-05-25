@@ -9,8 +9,30 @@ exports.activeTournamentsPage = (req, res) => {
       res.send({
         message: 'Error finding active tournaments',
       });
+      return;
     }
     res.send(data);
+  });
+};
+
+exports.activeTournamentUserData = (req, res) => {
+  Tournament.findActiveTournamentUser(req.params.id, (err, data) => {
+    if (err) {
+      res.send({
+        message: 'Error finding a user\'s active tournaments',
+      });
+      return;
+    }
+    // Do not send tournaments that have already occured
+    const activeTournaments = [];
+    const currentDate = new Date();
+    for (let i = 0; i < data.length; i += 1) {
+      const startDate = new Date(data[i].start_date);
+      if (startDate.getTime() > currentDate.getTime()) {
+        activeTournaments.push(data[i]);
+      }
+    }
+    res.send(activeTournaments);
   });
 };
 
