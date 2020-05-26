@@ -16,7 +16,7 @@ exports.activeTournamentsPage = (req, res) => {
 };
 
 exports.activeTournamentUserData = (req, res) => {
-  Tournament.findActiveTournamentUser(req.params.id, (err, data) => {
+  Tournament.findActiveTournamentUser(req.userId, (err, data) => {
     if (err) {
       res.send({
         message: 'Error finding a user\'s active tournaments',
@@ -37,7 +37,7 @@ exports.activeTournamentUserData = (req, res) => {
 };
 
 exports.setTeam = (req, res) => {
-  Tournament.createTeam(req.body.userId, req.body.tournamentId, req.body.selectedPlayers,
+  Tournament.createTeam(req.userId, req.body.tournamentId, req.body.selectedPlayers,
     (err, data) => {
       if (err) {
         res.send({

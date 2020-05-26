@@ -17,7 +17,7 @@ module.exports = function (app) {
   );
 
   app.get(
-    '/api/v1/active_tournament_user_data/:id',
+    '/api/v1/active_tournament_user_data',
     [authJwt.verifyToken],
     controller.activeTournamentUserData,
   );
