@@ -12,7 +12,6 @@ module.exports = function (app) {
 
   app.get(
     '/api/v1/active_tournaments',
-    [authJwt.verifyToken],
     controller.activeTournamentsPage,
   );
 
@@ -24,7 +23,6 @@ module.exports = function (app) {
 
   app.get(
     '/api/v1/tournament_player_data/:id',
-    [authJwt.verifyToken],
     controller.tournamentPlayerData,
   );
 
