@@ -2,6 +2,7 @@ const db = require('../models');
 
 const Tournament = db.tournament;
 const Player = db.player;
+const User = db.user;
 
 exports.activeTournamentsPage = (req, res) => {
   Tournament.findActive((err, data) => {
@@ -50,71 +51,60 @@ exports.setTeam = (req, res) => {
 };
 
 exports.tournamentPlayerData = (req, res) => {
-  Tournament.findPlayerData(req.params.id, (tournamentPlayerErr, tournamentPlayerData) => {
-    if (tournamentPlayerErr) {
+  // Get Players in a given Tournament
+  Player.getTournamentPlayerData(req.params.id, (playerErr, playerData) => {
+    if (playerErr) {
       res.send({
         message: 'Error finding a tournaments player data',
       });
       return;
     }
 
-    // Get an array of ids of the players playing in the tournament
-    // and get their name information from the players table
-    const playerIds = [];
-    for (let i = 0; i < tournamentPlayerData.length; i += 1) {
-      playerIds.push(tournamentPlayerData[i].player_id);
-    }
-
-    Player.getPlayersNamesFromIds(playerIds, (playerNameErr, playerNameData) => {
-      if (playerNameErr) {
+    Tournament.getTournamentNameFromId(req.params.id, (tournamentNameErr, tournamentNameData) => {
+      if (tournamentNameErr) {
         res.send({
-          message: 'Error finding player name data',
+          message: 'Error getting tournament name',
         });
         return;
       }
-      Tournament.getTournamentNameFromId(req.params.id, (tournamentNameErr, tournamentNameData) => {
-        if (tournamentNameErr) {
+
+      // Get a User's team, if they have one
+      User.getTeam(req.userId, req.params.id, (getTeamErr, getTeamData) => {
+        if (getTeamErr) {
           res.send({
-            message: 'Error getting tournament name',
+            message: 'Error getting users team',
           });
           return;
         }
-        // Join the tier and player data from the players_tournaments table
-        // with the first_name and last_name that was retrieved from the player table
-        // with the name that was retrieved from the tournaments table
-        // - may want to move all of this organizing of data if we use this funciton
-        // in a scenario that doesnt need it
-        const merged = [];
 
-        for (let i = 0; i < tournamentPlayerData.length; i += 1) {
-          merged.push({
-            ...tournamentPlayerData[i],
-            ...(playerNameData.find(
-              (itmInner) => itmInner.id === tournamentPlayerData[i].player_id,
-            )),
-          });
+        const selectedTeam = [];
+        if (getTeamData) {
+          for (let j = 0; j < getTeamData.length; j += 1) {
+            selectedTeam.push(getTeamData[j].playerId);
+          }
         }
 
-        // Return player objects to UI in an array grouped by tiers
-        // ex) All tier-1 players are found in sortedArray[0]
-        // ex) All tier-2 players are found in sortedArray[1]
-        merged.sort((a, b) => a.tier - b.tier);
-        const sortedArray = [[]];
-        let array = 0;
-        for (let index = 0; index < merged.length; index += 1) {
-          if (!sortedArray[array][0]) {
-            sortedArray[array].push(merged[index]);
-          } else if (sortedArray[array][0].tier === merged[index].tier) {
-            sortedArray[array].push(merged[index]);
-          } else {
-            array += 1;
-            sortedArray[array] = [merged[index]];
+        // Organize Player data by tier
+        const playerDataByTier = {};
+        // Create an object that contains which players are
+        // selected based on what tier they are in
+        const selectedPlayers = {};
+        for (let i = 0; i < playerData.length; i += 1) {
+          const player = playerData[i];
+          if (!playerDataByTier[`tier-${player.tier}`]) {
+            playerDataByTier[`tier-${player.tier}`] = [];
+            selectedPlayers[`tier-${player.tier}`] = null;
           }
+          if (selectedTeam && selectedTeam.indexOf(player.player_id) > -1) {
+            selectedPlayers[`tier-${player.tier}`] = player.player_id;
+          }
+          playerDataByTier[`tier-${player.tier}`].push(player);
         }
 
         const tournamentPlayerObj = {
           tournamentName: tournamentNameData.name,
-          playerData: sortedArray,
+          playerData: playerDataByTier,
+          selectedPlayers,
         };
         res.send(tournamentPlayerObj);
       });

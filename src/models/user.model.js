@@ -64,5 +64,36 @@ module.exports = (connection) => {
     });
   };
 
+  User.getTeam = (userId, tournamentId, result) => {
+    connection.query(`SELECT * FROM users_tournaments WHERE userId = ${userId} AND tournamentId = ${tournamentId}`, (getTeamErr, getTeamRes) => {
+      if (getTeamErr) {
+        console.log('Error: ', getTeamErr);
+        result(getTeamErr, null);
+        return;
+      }
+
+      if (getTeamRes.length) {
+        if (getTeamRes.length > 1) {
+          console.log('Warning: multiple Teams found for the same Tournament by the same User');
+        }
+
+        const userTournamentRelationId = getTeamRes[0].id;
+
+        connection.query(`SELECT * FROM user_tournament_players WHERE userTournamentRelationId = ${userTournamentRelationId}`, (getPlayersErr, getPlayersRes) => {
+          if (getPlayersErr) {
+            console.log('Error: ', getPlayersErr);
+            result(getPlayersErr, null);
+            return;
+          }
+
+          result(null, getPlayersRes);
+        });
+      } else {
+        // No team made yet
+        result(null, []);
+      }
+    });
+  };
+
   return User;
 };
