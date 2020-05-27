@@ -123,3 +123,37 @@ exports.tournamentPlayerData = (req, res) => {
     });
   });
 };
+
+exports.getLeaderboardData = (req, res) => {
+  // Need to get the Players on all of the Teams that are signed up for a particular Tournament
+  Tournament.getLeaderboardData(req.params.id, (userErr, userData) => {
+    if (userErr) {
+      res.send({
+        message: 'Error finding users in a tournament',
+      });
+      return;
+    }
+
+    Tournament.getTournamentNameFromId(req.params.id, (tournamentNameErr, tournamentNameData) => {
+      if (tournamentNameErr) {
+        res.send({
+          message: 'Error finding tournament name',
+        });
+        return;
+      }
+
+      const leaderboard = {};
+      for (let i = 0; i < userData.length; i += 1) {
+        if (!leaderboard[userData[i].team_name]) {
+          leaderboard[userData[i].team_name] = [];
+        }
+        leaderboard[userData[i].team_name].push(userData[i]);
+      }
+      const tournamentInformation = {
+        tournamentName: tournamentNameData,
+        leaderboard,
+      };
+      res.send(tournamentInformation);
+    });
+  });
+};

@@ -38,4 +38,9 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     controller.setTeam,
   );
+
+  app.get(
+    '/api/v1/tournament_leaderboard_data/:id',
+    controller.getLeaderboardData,
+  );
 };

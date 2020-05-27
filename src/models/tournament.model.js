@@ -186,5 +186,25 @@ module.exports = (connection) => {
       }
     });
   };
+
+  Tournament.getLeaderboardData = (tournamentId, result) => {
+    const queryHelper = `SELECT users.team_name, users_tournaments.userId, user_tournament_players.playerId, players_tournaments.score, players_tournaments.tier, players_tournaments.cut
+        FROM users_tournaments INNER JOIN user_tournament_players
+        ON users_tournaments.tournamentId = ${tournamentId} AND users_tournaments.id = user_tournament_players.userTournamentRelationId
+        INNER JOIN players_tournaments
+        ON players_tournaments.player_id = user_tournament_players.playerId 
+        INNER JOIN users
+        ON users_tournaments.userId = users.id
+        ORDER BY \`users_tournaments\`.\`userId\` ASC, \`players_tournaments\`.\`tier\` ASC`;
+
+    connection.query(queryHelper, (err, res) => {
+      if (err) {
+        console.log('Error: ', err);
+        result(err, null);
+        return;
+      }
+      result(null, res);
+    });
+  };
   return Tournament;
 };
