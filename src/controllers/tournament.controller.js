@@ -37,6 +37,18 @@ exports.activeTournamentUserData = (req, res) => {
   });
 };
 
+exports.pastTournamentUserData = (req, res) => {
+  Tournament.findPastTournamentUser(req.userId, (err, data) => {
+    if (err) {
+      res.send({
+        message: 'Error finding a user\'s past tournaments',
+      });
+      return;
+    }
+    res.send(data);
+  });
+};
+
 exports.setTeam = (req, res) => {
   Tournament.createTeam(req.userId, req.body.tournamentId, req.body.selectedPlayers,
     (err, data) => {

@@ -53,6 +53,36 @@ module.exports = (connection) => {
     });
   };
 
+  Tournament.findPastTournamentUser = (id, result) => {
+    // Get list of tournaments a user is in
+    connection.query(`SELECT * FROM users_tournaments WHERE userId = ${id}`, (usersTournamentsErr, usersTournamentsRes) => {
+      if (usersTournamentsErr) {
+        console.log('Error: ', usersTournamentsErr);
+        result(usersTournamentsErr, null);
+        return;
+      }
+      if (usersTournamentsRes.length) {
+        // Make an array of the tournament ids the user was a part of
+        const tournamentIds = [];
+        for (let i = 0; i < usersTournamentsRes.length; i += 1) {
+          tournamentIds.push(usersTournamentsRes[i].tournamentId);
+        }
+        // Get the details of the tournaments a user was in
+        connection.query(`SELECT * FROM tournaments WHERE id IN (${tournamentIds.join(', ')}) AND DATE(NOW()) > DATE(start_date)`, (tournamentsErr, tournamentRes) => {
+          if (tournamentsErr) {
+            console.log('Error: ', tournamentsErr);
+            result(tournamentsErr, null);
+            return;
+          }
+          result(null, tournamentRes);
+        });
+      } else {
+        console.log('User is not in any tournaments');
+        result(null, []);
+      }
+    });
+  };
+
   Tournament.getTournamentNameFromId = (id, result) => {
     connection.query('SELECT name FROM tournaments WHERE id = ?', id, (err, res) => {
       if (err) {
