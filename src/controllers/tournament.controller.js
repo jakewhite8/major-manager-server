@@ -143,15 +143,19 @@ exports.getLeaderboardData = (req, res) => {
       }
 
       const leaderboard = {};
+      const scoresByTeam = {};
       for (let i = 0; i < userData.length; i += 1) {
         if (!leaderboard[userData[i].team_name]) {
           leaderboard[userData[i].team_name] = [];
+          scoresByTeam[userData[i].team_name] = 0;
         }
         leaderboard[userData[i].team_name].push(userData[i]);
+        scoresByTeam[userData[i].team_name] += userData[i].score;
       }
       const tournamentInformation = {
         tournamentName: tournamentNameData,
         leaderboard,
+        scoresByTeam,
       };
       res.send(tournamentInformation);
     });
