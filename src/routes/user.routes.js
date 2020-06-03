@@ -1,5 +1,6 @@
 const { authJwt } = require('../middleware');
 const controller = require('../controllers/user.controller.js');
+const adminController = require('../controllers/admin.controller.js');
 
 module.exports = function (app) {
   app.use((req, res, next) => {
@@ -28,5 +29,11 @@ module.exports = function (app) {
     '/api/test/admin',
     [authJwt.verifyToken, authJwt.isAdmin],
     controller.adminPage,
+  );
+
+  app.post(
+    '/api/v1/upload_player_scores/:id',
+    [authJwt.verifyToken, authJwt.isAdmin],
+    adminController.uploadPlayerScores,
   );
 };

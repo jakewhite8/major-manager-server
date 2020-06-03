@@ -13,6 +13,7 @@ const user = require('./user.model.js')(connection);
 const role = require('./role.model.js')(connection);
 const tournament = require('./tournament.model.js')(connection);
 const player = require('./player.model.js')(connection);
+const admin = require('./admin.model.js')(connection);
 
 module.exports = {
   connection,
@@ -20,4 +21,5 @@ module.exports = {
   role,
   tournament,
   player,
+  admin,
 };
