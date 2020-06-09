@@ -3,13 +3,35 @@ const db = require('../models');
 const Admin = db.admin;
 
 exports.uploadPlayerScores = (req, res) => {
-  Admin.postPlayerScores(req.params.id, req.body.playerData, (err, data) => {
-    if (err) {
+  Admin.addPlayersToPlayersTable(req.body.playerData, (addPlayersErr, addPlayersData) => {
+    if (addPlayersErr) {
       res.send({
-        message: 'Error uploading players scores',
-      })
+        message: 'Error uploading players to players table',
+      });
       return;
     }
-    res.status(200).send(data);
-  })
+
+    // addPlayersData:
+    // [
+    //   {
+    //     "first_name": "",
+    //     "last_name": "terry",
+    //     "score": "157",
+    //     "id": 123,
+    //   ? "tier":2,
+    //   },
+    //   ...
+    // ]
+
+    Admin.addPlayersToTournamentTable(addPlayersData, req.params.id,
+      (addTournamentErr, addTournamentData) => {
+        if (addTournamentErr) {
+          res.send({
+            message: 'Error uploading players to tournament table',
+          });
+          return;
+        }
+        res.status(200).send(addTournamentData);
+      });
+  });
 };
