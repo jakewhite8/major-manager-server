@@ -25,6 +25,23 @@ module.exports = {
 };
 
 ```
+* Create Roles
+    * This is a role based application. As a result, one needs to initialize the roles that the system will be using when first creating the application
+    * Uncomment the following section found in /app.js. Create your desired roles within the initializeRoleTable function and start the server (remove the code after running once):
+```
+// Add roles to the role table
+const db = require('./src/models');
+
+const Role = db.role;
+initializeRoleTable();
+
+function initializeRoleTable() {
+  Role.create('user')
+  Role.create('moderator')
+  Role.create('admin')
+}
+```
+
 
 ### Run
 ```
