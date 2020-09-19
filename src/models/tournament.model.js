@@ -192,7 +192,7 @@ module.exports = (connection) => {
         FROM users_tournaments INNER JOIN user_tournament_players
         ON users_tournaments.tournamentId = ${tournamentId} AND users_tournaments.id = user_tournament_players.userTournamentRelationId
         INNER JOIN players_tournaments
-        ON players_tournaments.player_id = user_tournament_players.playerId 
+        ON players_tournaments.player_id = user_tournament_players.playerId AND players_tournaments.tournament_id = ${tournamentId}
         INNER JOIN users
         ON users_tournaments.userId = users.id
         INNER JOIN players

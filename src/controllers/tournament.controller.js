@@ -142,7 +142,9 @@ exports.getLeaderboardData = (req, res) => {
         return;
       }
 
+      // Create an object that contains a User's Team for the Tournament
       const leaderboard = {};
+      // Create an object that tracks each Team's total score
       const scoresByTeam = {};
       for (let i = 0; i < userData.length; i += 1) {
         if (!leaderboard[userData[i].team_name]) {
