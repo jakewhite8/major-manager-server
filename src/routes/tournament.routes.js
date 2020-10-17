@@ -10,6 +10,7 @@ module.exports = function (app) {
     next();
   });
 
+  // Return list of Tournaments you can sign up for that have not started yet 
   app.get(
     '/api/v1/active_tournaments',
     controller.activeTournamentsPage,
