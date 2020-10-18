@@ -6,7 +6,6 @@ const connection = mysql.createPool({
   user: dbConfig.USER,
   password: dbConfig.PASSWORD,
   database: dbConfig.DB,
-  port: dbConfig.PORT,
 });
 
 const user = require('./user.model.js')(connection);
