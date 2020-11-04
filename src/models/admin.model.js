@@ -102,7 +102,8 @@ module.exports = (connection) => {
           // insertId returns the id of the first row inserted
           // Add id to array of newPlayers
           for (let i = 0; i < newPlayers.length; i += 1) {
-            newPlayers[i].id = insertPlayersRes.insertId + i;
+            // ClearDB SQL increases inserted row id's by ten
+            newPlayers[i].id = insertPlayersRes.insertId + (10 * i);
           }
 
           // merge the newPlayers array to existingPlayersAndIds
