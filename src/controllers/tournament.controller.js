@@ -1,4 +1,5 @@
 const db = require('../models');
+const settings = require('../config/golfSettings.config');
 
 const Tournament = db.tournament;
 const Player = db.player;
@@ -144,20 +145,63 @@ exports.getLeaderboardData = (req, res) => {
 
       // Create an object that contains a User's Team for the Tournament
       const leaderboard = {};
-      // Create an object that tracks each Team's total score
-      const scoresByTeam = {};
+      // Create an object that tracks each Team's best scores
+      const topScoresByTeam = {};
       for (let i = 0; i < userData.length; i += 1) {
-        if (!leaderboard[userData[i].team_name]) {
-          leaderboard[userData[i].team_name] = [];
-          scoresByTeam[userData[i].team_name] = 0;
+        const selectedPlayer = userData[i];
+        const selectedTeam = userData[i].team_name;
+        if (!leaderboard[selectedTeam]) {
+          leaderboard[selectedTeam] = [];
+          topScoresByTeam[selectedTeam] = [];
         }
-        leaderboard[userData[i].team_name].push(userData[i]);
-        scoresByTeam[userData[i].team_name] += userData[i].score;
+        // Check configuration settings to see how many scores are
+        // counted to a teams total score
+        if (topScoresByTeam[selectedTeam].length > settings.totalScoresCounted - 1) {
+          // Remove the highest score in the array if the selected player has a lower score
+          topScoresByTeam[selectedTeam].sort(function(a, b) {return a.score - b.score});
+          const highestScoreInArrayLocation = topScoresByTeam[selectedTeam].length - 1;
+          if (topScoresByTeam[selectedTeam][highestScoreInArrayLocation].score > selectedPlayer.score) {
+            topScoresByTeam[selectedTeam][highestScoreInArrayLocation] = {
+              'score': selectedPlayer.score,
+              'playerId': selectedPlayer.playerId
+            };
+          }
+        } else {
+          topScoresByTeam[selectedTeam].push({
+            'score': selectedPlayer.score,
+            'playerId': selectedPlayer.playerId
+          })       
+        }
+        leaderboard[selectedTeam].push(selectedPlayer);
       }
+      
+      // Iterate through the topScoresByTeam object to get a total score for each team
+      let scoresByTeam = {};
+      for (let team in topScoresByTeam) {
+        let finalScore = 0;
+        for (let j = 0; j < topScoresByTeam[team].length; j++) {
+          if (!scoresByTeam[team]) {
+            scoresByTeam[team] = 0;
+          }
+          scoresByTeam[team] += topScoresByTeam[team][j].score;
+        }
+      }
+
+      // Add a 'selected' property for each player where a team uses their score towards their total score
+      for (let team in leaderboard) {
+        let arrayOfTopScoreIds = topScoresByTeam[team].map(function(player) {return player.playerId});
+        for (let k = 0; k < leaderboard[team].length; k++){
+          let selectedPlayer = leaderboard[team][k];
+          // If a player's score is in the list of top players array (for a particular team)
+          // then the selected attribute should equal true
+          selectedPlayer['selected'] = arrayOfTopScoreIds.indexOf(selectedPlayer.playerId) > -1 ? true : false;
+        }
+      }
+
       const tournamentInformation = {
         tournamentName: tournamentNameData,
         leaderboard,
-        scoresByTeam,
+        scoresByTeam
       };
       res.send(tournamentInformation);
     });
