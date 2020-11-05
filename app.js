@@ -7,7 +7,7 @@ const cors = require('cors');
 const app = express();
 
 const corsOptions = {
-  origin: 'https://major-manager-ui.herokuapp.com',
+  origin: 'http://www.highstakesgolfpools.com',
 };
 app.use(cors(corsOptions));
 
