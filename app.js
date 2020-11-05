@@ -7,7 +7,7 @@ const cors = require('cors');
 const app = express();
 
 const corsOptions = {
-  origin: 'http://localhost:8080',
+  origin: 'https://major-manager-ui.herokuapp.com',
 };
 app.use(cors(corsOptions));
 
