@@ -68,12 +68,14 @@ module.exports = (connection) => {
           tournamentIds.push(usersTournamentsRes[i].tournamentId);
         }
         // Get the details of the tournaments a user was in
-        connection.query(`SELECT * FROM tournaments WHERE id IN (${tournamentIds.join(', ')}) AND DATE(NOW()) > DATE(start_date)`, (tournamentsErr, tournamentRes) => {
+        connection.query(`SELECT * FROM tournaments WHERE id IN (${tournamentIds.join(', ')})`, (tournamentsErr, tournamentRes) => {
           if (tournamentsErr) {
             console.log('Error: ', tournamentsErr);
             result(tournamentsErr, null);
             return;
           }
+          // console.log('tournamentRes')
+          // console.log(tournamentRes)
           result(null, tournamentRes);
         });
       } else {
