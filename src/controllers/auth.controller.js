@@ -47,7 +47,7 @@ exports.signin = (req, res) => {
     }
 
     const token = jwt.sign({ id: data.id }, config.secret, {
-      expiresIn: 86400, // 24 Hours
+      expiresIn: 604800, // 1 week
     });
 
     // Get the roles a user belongs to

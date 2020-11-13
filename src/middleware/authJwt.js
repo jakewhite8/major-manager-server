@@ -17,7 +17,7 @@ const verifyToken = (req, res, next) => {
   jwt.verify(token, config.secret, (err, decoded) => {
     if (err) {
       res.status(401).send({
-        message: 'Unauthorized',
+        message: 'Unauthorized - Session may be expired. Log out and back in',
       });
       return;
     }
