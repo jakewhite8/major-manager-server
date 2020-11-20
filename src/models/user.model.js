@@ -95,5 +95,17 @@ module.exports = (connection) => {
     });
   };
 
+  User.updateUser = (user, result) => {
+    connection.query(`UPDATE users SET team_name = '${user.team_name}' , email = '${user.email}' WHERE id = ${user.user_id}`, (err, res) => {
+      if (err) {
+        console.log('Error: ', err);
+        result(err, null);
+        return;
+      }
+
+      result(null, res);
+    });
+  }
+
   return User;
 };

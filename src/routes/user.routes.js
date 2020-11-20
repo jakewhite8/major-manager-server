@@ -36,4 +36,10 @@ module.exports = function (app) {
     [authJwt.verifyToken, authJwt.isAdmin],
     adminController.uploadPlayerScores,
   );
+
+  app.put(
+    '/api/v1/update_user',
+    [authJwt.verifyToken],
+    controller.updateUser
+  );
 };
