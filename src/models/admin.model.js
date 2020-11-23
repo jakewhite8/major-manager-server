@@ -68,6 +68,7 @@ module.exports = (connection) => {
                 last_name: selectPlayersRes[j].last_name,
                 score: playerData[i].score,
                 tier: playerData[i].tier || '',
+                cut: playerData[i].position == 'CUT',
               });
               addToInsertList = false;
               break;
@@ -179,24 +180,31 @@ module.exports = (connection) => {
         // - Need player_tournament id so rows can be updated, not duplicated
         const mergedTournamentAndPlayerData = [];
         for (let i = 0; i < selectTournamentRes.length; i += 1) {
+          const updatedPlayer = playerTournamentData.find(
+            (playerObject) => playerObject.id === selectTournamentRes[i].player_id,
+          )
+          
+          if (updatedPlayer.cut) {
+            updatedPlayer.score += 10;
+          }
           mergedTournamentAndPlayerData.push([
             selectTournamentRes[i].id,
-            playerTournamentData.find(
-              (playerObject) => playerObject.id === selectTournamentRes[i].player_id,
-            ).score,
+            updatedPlayer.score,
             selectTournamentRes[i].player_id,
             tournamentId,
             selectTournamentRes[i].tier,
+            updatedPlayer.cut
           ]);
         }
 
-        const query = `INSERT INTO players_tournaments (id, score, player_id, tournament_id, tier)
+        const query = `INSERT INTO players_tournaments (id, score, player_id, tournament_id, tier, cut)
                 VALUES (${mergedTournamentAndPlayerData.join('), (')})
                 ON DUPLICATE KEY UPDATE id=VALUES(id),
                 score=VALUES(score),
                 player_id=VALUES(player_id),
                 tournament_id=VALUES(tournament_id),
-                tier=VALUES(tier)`;
+                tier=VALUES(tier),
+                cut=VALUES(cut)`;
 
         connection.query(query, (updateTournamentErr, updateTournamentRes) => {
           if (updateTournamentErr) {
