@@ -13,8 +13,8 @@ exports.createTournament = (req, res) => {
     return;
   }
   const tournament = new Tournament({
-    name: req.body.tournament_name,
-    start_date: req.body.tournament_date
+    name: req.body.name,
+    start_date: req.body.start_date
   });
 
   Tournament.create(tournament, (err, data) => {

@@ -3,7 +3,7 @@ const db = require('../models');
 const Tournament = db.tournament;
 
 const checkDuplicateTournamentName = (req, res, next) => {
-  Tournament.findOne(req.body.tournament_name, (err, data) => {
+  Tournament.findOne(req.body.name, (err, data) => {
     if (err) {
       console.log('Error: ', err);
       res.status(500).send(err);
