@@ -1,4 +1,4 @@
-const { authJwt } = require('../middleware');
+const { authJwt, verifyCreateTournament } = require('../middleware');
 const controller = require('../controllers/tournament.controller.js');
 
 module.exports = function (app) {
@@ -38,6 +38,12 @@ module.exports = function (app) {
     '/api/v1/set_team',
     [authJwt.verifyToken],
     controller.setTeam,
+  );
+
+  app.post(
+    '/api/v1/create_tournament',
+    [authJwt.verifyToken, authJwt.isAdmin, verifyCreateTournament.checkDuplicateTournamentName],
+    controller.createTournament,
   );
 
   app.get(

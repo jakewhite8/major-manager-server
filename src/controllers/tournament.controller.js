@@ -5,6 +5,29 @@ const Tournament = db.tournament;
 const Player = db.player;
 const User = db.user;
 
+exports.createTournament = (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      message: 'Content cannot be empty'
+    });
+    return;
+  }
+  const tournament = new Tournament({
+    name: req.body.tournament_name,
+    start_date: req.body.tournament_date
+  });
+
+  Tournament.create(tournament, (err, data) => {
+    if (err) {
+      res.status(500).send({
+        message: err.message || 'Error creating tournament',
+      });
+      return;
+    }
+    res.send(data);
+  })
+}
+
 exports.activeTournamentsPage = (req, res) => {
   Tournament.findActive((err, data) => {
     if (err) {

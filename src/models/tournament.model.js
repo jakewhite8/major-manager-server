@@ -4,6 +4,31 @@ module.exports = (connection) => {
     this.start_date = tournament.start_date;
   };
 
+  Tournament.create = (tournament, result) => {
+    connection.query(`INSERT INTO tournaments(name, start_date) VALUES('${tournament.name}', '${tournament.start_date}')`, (tournamentErr, tournamentRes) => {
+      if (tournamentErr) {
+        console.log(tournamentErr)
+        result(tournamentErr, null);
+        return;
+      }
+      result(null, tournamentRes)
+    }) 
+  };
+
+  Tournament.findOne = (tournament_name, result) => {
+    connection.query(`SELECT * FROM tournaments WHERE name = '${tournament_name}'`, (err, res) => {
+      if (err) {
+        result(err, null);
+        return;
+      }
+      if (res.length) {
+        result(null, res[0]);
+        return;
+      }
+      result(null, null);
+    })
+  };
+
   Tournament.findActive = (result) => {
     connection.query('SELECT * FROM tournaments WHERE DATE(NOW()) < DATE(start_date)', (err, res) => {
       if (err) {

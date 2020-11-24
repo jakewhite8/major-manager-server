@@ -1,6 +1,7 @@
 const { authJwt } = require('../middleware');
 const controller = require('../controllers/user.controller.js');
 const adminController = require('../controllers/admin.controller.js');
+const verifyCreateTournament = require('../middleware');
 
 module.exports = function (app) {
   app.use((req, res, next) => {
