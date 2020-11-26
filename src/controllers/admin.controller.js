@@ -5,7 +5,7 @@ const Admin = db.admin;
 exports.uploadPlayerScores = (req, res) => {
   Admin.addPlayersToPlayersTable(req.body.playerData, (addPlayersErr, addPlayersData) => {
     if (addPlayersErr) {
-      res.send({
+      res.status(500).send({
         message: 'Error uploading players to players table',
       });
       return;

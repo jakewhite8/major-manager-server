@@ -30,7 +30,9 @@ module.exports = (connection) => {
   };
 
   Tournament.findActive = (result) => {
-    connection.query('SELECT * FROM tournaments WHERE DATE(NOW()) < DATE(start_date)', (err, res) => {
+    // Active tournaments are tournaments that have not started yet
+    // or tournaments that have not ended yet
+    connection.query('SELECT * FROM tournaments WHERE start_date > DATE_SUB(NOW(), INTERVAL 5 DAY)', (err, res) => {
       if (err) {
         console.log('Error: ', err);
         result(err, null);
