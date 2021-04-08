@@ -31,8 +31,7 @@ module.exports = (connection) => {
 
   Tournament.findActive = (result) => {
     // Active tournaments are tournaments that have not started yet
-    // or tournaments that have not ended yet
-    connection.query('SELECT * FROM tournaments WHERE start_date > DATE_SUB(NOW(), INTERVAL 5 DAY)', (err, res) => {
+    connection.query('SELECT * FROM tournaments WHERE start_date > DATE_ADD(NOW(), INTERVAL 5 DAY)', (err, res) => {
       if (err) {
         console.log('Error: ', err);
         result(err, null);
@@ -95,7 +94,7 @@ module.exports = (connection) => {
           tournamentIds.push(usersTournamentsRes[i].tournamentId);
         }
         // Get the details of the tournaments a user was in
-        connection.query(`SELECT * FROM tournaments WHERE id IN (${tournamentIds.join(', ')}) AND start_date < DATE(NOW())`, (tournamentsErr, tournamentRes) => {
+        connection.query(`SELECT * FROM tournaments WHERE id IN (${tournamentIds.join(', ')})`, (tournamentsErr, tournamentRes) => {
           if (tournamentsErr) {
             console.log('Error: ', tournamentsErr);
             result(tournamentsErr, null);

@@ -51,9 +51,12 @@ exports.activeTournamentUserData = (req, res) => {
     // Do not send tournaments that have already occured
     const activeTournaments = [];
     const currentDate = new Date();
+    // create buffer so the tournament will be on the active page while it is in progess
+    const bufferDate = new Date()
+    bufferDate.setDate(currentDate.getDate() - 5);
     for (let i = 0; i < data.length; i += 1) {
       const startDate = new Date(data[i].start_date);
-      if (startDate.getTime() > currentDate.getTime()) {
+      if (startDate.getTime() > bufferDate.getTime()) {
         activeTournaments.push(data[i]);
       }
     }
