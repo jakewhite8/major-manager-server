@@ -31,7 +31,7 @@ module.exports = (connection) => {
 
   Tournament.findActive = (result) => {
     // Active tournaments are tournaments that have not started yet
-    connection.query('SELECT * FROM tournaments', (err, res) => {
+    connection.query('SELECT * FROM tournaments WHERE start_date > DATE(NOW())', (err, res) => {
       if (err) {
         console.log('Error: ', err);
         result(err, null);
