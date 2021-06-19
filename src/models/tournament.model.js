@@ -30,8 +30,24 @@ module.exports = (connection) => {
   };
 
   Tournament.findActive = (result) => {
-    // Active tournaments are tournaments that have not started yet
-    connection.query('SELECT * FROM tournaments WHERE start_date > DATE(NOW())', (err, res) => {
+    // Active tournaments are tournaments that have not ended yet
+    connection.query('SELECT * FROM tournaments WHERE datediff(start_date, curdate()) > -7', (err, res) => {
+      if (err) {
+        console.log('Error: ', err);
+        result(err, null);
+        return;
+      }
+      if (res.length) {
+        result(null, res);
+        return;
+      }
+      result({ kind: 'not found' }, null);
+    });
+  };
+
+  Tournament.findUpcoming = (result) => {
+    // Upcoming tournaments are tournaments that have not started yet
+    connection.query('SELECT * FROM tournaments WHERE datediff(start_date, curdate()) > -1', (err, res) => {
       if (err) {
         console.log('Error: ', err);
         result(err, null);

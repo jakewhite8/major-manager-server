@@ -10,12 +10,19 @@ module.exports = function (app) {
     next();
   });
 
-  // Return list of Tournaments you can sign up for that have not started yet 
+  // Return list of Tournaments that have not started yet
+  app.get(
+    '/api/v1/upcoming_tournaments',
+    controller.joinTournamentsPage,
+  );
+
+  // Return list of Tournaments that have not ended
   app.get(
     '/api/v1/active_tournaments',
     controller.activeTournamentsPage,
   );
 
+  // Return a list of Tournaments a user is signed up for
   app.get(
     '/api/v1/active_tournament_user_data',
     [authJwt.verifyToken],

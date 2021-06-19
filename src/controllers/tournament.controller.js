@@ -40,6 +40,18 @@ exports.activeTournamentsPage = (req, res) => {
   });
 };
 
+exports.joinTournamentsPage = (req, res) => {
+  Tournament.findUpcoming((err, data) => {
+    if (err) {
+      res.send({
+        message: 'Error finding upcoming tournaments',
+      });
+      return;
+    }
+    res.send(data);
+  });
+};
+
 exports.activeTournamentUserData = (req, res) => {
   Tournament.findActiveTournamentUser(req.userId, (err, data) => {
     if (err) {

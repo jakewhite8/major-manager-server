@@ -156,12 +156,13 @@ module.exports = (connection) => {
       if (newPlayers.length) {
         const newPlayerData = [];
         for (let i = 0; i < playerTournamentData.length; i += 1) {
+          const tier = playerTournamentData[i] && playerTournamentData[i].tier ? playerTournamentData[i].tier : 6;
           if (newPlayers.indexOf(playerTournamentData[i].id) > -1) {
             newPlayerData.push([
               playerTournamentData[i].id,
               tournamentId,
               playerTournamentData[i].score,
-              playerTournamentData[i].tier,
+              tier,
             ]);
           }
         }
@@ -185,7 +186,7 @@ module.exports = (connection) => {
           )
           
           if (updatedPlayer.cut) {
-            updatedPlayer.score += 10;
+            updatedPlayer.score += 8;
           }
           mergedTournamentAndPlayerData.push([
             selectTournamentRes[i].id,
