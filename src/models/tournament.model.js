@@ -45,6 +45,22 @@ module.exports = (connection) => {
     });
   };
 
+  Tournament.concludedTournaments = (result) => {
+    // Return IDs and the name of tournaments that have ended
+    connection.query('select * from tournaments where timestampdiff(hour, start_date, date_sub(current_timestamp(), interval 4 hour)) > 80;', (err, res) => {
+      if (err) {
+        console.log('Error: ', err);
+        result(err, null);
+        return;
+      }
+      if (res.length) {
+        result(null, res);
+        return;
+      }
+      result({ kind: 'not found' }, null);
+    });
+  };
+
   Tournament.findUpcoming = (result) => {
     // Upcoming tournaments are tournaments that have not started yet
     connection.query('SELECT * FROM tournaments WHERE datediff(start_date, curdate()) > -1', (err, res) => {

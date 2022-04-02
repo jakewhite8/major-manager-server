@@ -40,6 +40,18 @@ exports.activeTournamentsPage = (req, res) => {
   });
 };
 
+exports.concludedTournaments = (req, res) => {
+  Tournament.concludedTournaments((err, data) => {
+    if (err) {
+      res.send({
+        message: 'Error finding tournaments that have ended',
+      });
+      return;
+    }
+    res.send(data);
+  });
+};
+
 exports.joinTournamentsPage = (req, res) => {
   Tournament.findUpcoming((err, data) => {
     if (err) {

@@ -22,6 +22,12 @@ module.exports = function (app) {
     controller.activeTournamentsPage,
   );
 
+  // Return list of Tournaments that have ended
+  app.get(
+    '/api/v1/concluded_tournaments',
+    controller.concludedTournaments,
+  );
+
   // Return a list of Tournaments a user is signed up for
   app.get(
     '/api/v1/active_tournament_user_data',
