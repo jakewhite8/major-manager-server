@@ -57,4 +57,14 @@ module.exports = function (app) {
     '/api/v1/tournament_leaderboard_data/:id',
     controller.getLeaderboardData,
   );
+
+  // Returns all the Team names that participated in a given Tournament
+  app.get(
+    '/api/v1/tournament_team_data/:id',
+    [authJwt.verifyToken],
+    controller.getTournamentTeamNames,
+  );
+
+
+
 };

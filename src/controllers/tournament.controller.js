@@ -245,3 +245,16 @@ exports.getLeaderboardData = (req, res) => {
     });
   });
 };
+
+// Return all Team names that participated in a given tournament
+exports.getTournamentTeamNames = (req, res) => {
+  Tournament.getTournamentTeamNames(req.params.id, (err, data) => {
+      if (err) {
+        res.send({
+          message: (err && err.message) || 'Error finding teams in a tournament',
+        });
+        return;
+      }
+      res.send(data);
+    });
+};

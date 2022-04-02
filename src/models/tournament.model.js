@@ -252,5 +252,20 @@ module.exports = (connection) => {
       result(null, res);
     });
   };
+
+  // Return all Team names that participated in a given tournament
+  Tournament.getTournamentTeamNames = (tournamentId, result) => {
+    connection.query(`SELECT users.id, users.team_name FROM users_tournaments 
+      INNER JOIN users ON users.id = users_tournaments.userId AND users_tournaments.tournamentId = ${tournamentId};`,
+        (err, res) => {
+      if (err) {
+        console.log('Error: ', err);
+        result(err, null);
+        return;
+      }
+      result(null, res);
+    });
+  };
+
   return Tournament;
 };
