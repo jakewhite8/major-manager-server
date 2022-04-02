@@ -37,3 +37,21 @@ exports.updateUser = (req, res) => {
     res.status(200).send(user);
   })
 };
+
+// Add or update the user_wins table with a team that won a given tournament
+exports.addWinningTeam = (req, res) => {
+  if(!req.body) {
+    res.status(400).send({
+      message: 'Content can not be empty',
+    });
+  }
+
+  User.updateUserWins({userId: req.body.userId, tournamentId: req.body.tournamentId}, (updateUserWinsErr, updateUserWinsRes) => {
+    if (updateUserWinsErr) {
+      res.send({
+        message: 'Error updating a users wins'
+      });
+    }
+    res.status(200).send(updateUserWinsRes);
+  })
+};

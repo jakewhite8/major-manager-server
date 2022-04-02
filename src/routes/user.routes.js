@@ -43,4 +43,11 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     controller.updateUser
   );
+
+  // Add or update the user_wins table with a team that won a given tournament
+  app.post(
+    '/api/v1/add_winning_team',
+    [authJwt.verifyToken, authJwt.isAdmin],
+    controller.addWinningTeam
+  )
 };

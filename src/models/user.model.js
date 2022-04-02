@@ -107,5 +107,18 @@ module.exports = (connection) => {
     });
   }
 
+  // Add or update the user_wins table with a team that won a given tournament
+  User.updateUserWins = (data, result) => {
+    connection.query(`INSERT INTO user_wins(userId, tournamentId) VALUES(${data.userId}, ${data.tournamentId})`, (err, res) => {
+      if (err) {
+        console.log('Error: ', err);
+        result(err, null);
+        return;
+      }
+
+      result(null, res);
+    });
+  }
+
   return User;
 };
