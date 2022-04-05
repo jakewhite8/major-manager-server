@@ -283,5 +283,20 @@ module.exports = (connection) => {
     });
   };
 
+  // Return the winning Team of each Tournament [userId, users.team_name, tournament.name, tournamentId]
+  Tournament.getLeagueLeaderboard = (tournamentId, result) => {
+    connection.query(`SELECT user_wins.userId, users.team_name, user_wins.tournamentId, tournaments.name FROM user_wins 
+      INNER JOIN users ON users.id = user_wins.userId 
+      INNER JOIN tournaments ON user_wins.tournamentId = tournaments.id
+      ORDER BY user_wins.userId;`, (err, res) => {
+      if (err) {
+        console.log('Error: ', err);
+        result(err, null);
+        return;
+      }
+      result(null, res);
+    });
+  };
+
   return Tournament;
 };

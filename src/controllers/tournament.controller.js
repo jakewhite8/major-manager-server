@@ -270,3 +270,61 @@ exports.getTournamentTeamNames = (req, res) => {
       res.send(data);
     });
 };
+
+// Return an array of Teams with the Tournaments they have won as well as an object with the number of wins each Team has
+exports.getLeagueLeaderboard = (req, res) => {
+  Tournament.getLeagueLeaderboard(req, (err, data) => {
+      if (err) {
+        res.send({
+          message: (err && err.message) || 'Error retrieving League Leaderboard Data',
+        });
+        return;
+      }
+
+      // Make an array of objects organized by Team, populated with the Tournaments they have won
+      // [{
+      //   userId: 131,
+      //   team_name: "Winning Team",
+      //   tournaments: [{123, "1999 Masters"}]
+      // },
+      // {
+      //   userId: 157,
+      //   team_name: "Clicker",
+      //   tournaments: [{230, "2000 PGA Championship"}]
+      // }]
+      // x interates through data
+      // i iterates through teamArray
+      let teamArray = []
+      let tournamentWinCount = {}
+      for (let x = 0, i = 0; x < data.length; x++) {
+        if (x == 0) {
+          teamArray.push({
+            'userId': data[x].userId,
+            'team_name': data[x].team_name,
+            'tournaments' : [[data[x].tournamentId, data[x].name]]
+          });
+          tournamentWinCount[data[x].team_name] = 1
+        } else if (data[x].userId == teamArray[i].userId) {
+          // Team has already been created
+          teamArray[i].tournaments.push([data[x].tournamentId, data[x].name]);
+          tournamentWinCount[data[x].team_name] += 1;
+        } else {
+          // New Team
+          teamArray.push({
+            'userId': data[x].userId,
+            'team_name': data[x].team_name,
+            'tournaments' : [[data[x].tournamentId, data[x].name]]
+          });
+          tournamentWinCount[data[x].team_name] = 1;
+          i++;
+        }
+      }
+
+      // Order the teamArray array by how many Tournaments a Team has won
+      teamArray.sort(function(a,b) {
+        return b.tournaments.length - a.tournaments.length;
+      })
+
+      res.send({teamArray, tournamentWinCount});
+    });
+};

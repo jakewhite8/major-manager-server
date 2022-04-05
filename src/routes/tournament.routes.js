@@ -71,6 +71,10 @@ module.exports = function (app) {
     controller.getTournamentTeamNames,
   );
 
-
+  app.get(
+    '/api/v1/league_leaderboard',
+    [authJwt.verifyToken],
+    controller.getLeagueLeaderboard,
+  );
 
 };
