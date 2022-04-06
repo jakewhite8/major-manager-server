@@ -271,7 +271,7 @@ exports.getTournamentTeamNames = (req, res) => {
     });
 };
 
-// Return an array of Teams with the Tournaments they have won as well as an object with the number of wins each Team has
+// Return an array of Teams with the Tournaments they have won as well as an object with the number of wins each Team has`
 exports.getLeagueLeaderboard = (req, res) => {
   Tournament.getLeagueLeaderboard(req, (err, data) => {
       if (err) {
@@ -301,19 +301,19 @@ exports.getLeagueLeaderboard = (req, res) => {
           teamArray.push({
             'userId': data[x].userId,
             'team_name': data[x].team_name,
-            'tournaments' : [[data[x].tournamentId, data[x].name]]
+            'tournaments' : [{"id": data[x].tournamentId, "name": data[x].name}]
           });
           tournamentWinCount[data[x].team_name] = 1
         } else if (data[x].userId == teamArray[i].userId) {
           // Team has already been created
-          teamArray[i].tournaments.push([data[x].tournamentId, data[x].name]);
+          teamArray[i].tournaments.push({"id": data[x].tournamentId, "name": data[x].name});
           tournamentWinCount[data[x].team_name] += 1;
         } else {
           // New Team
           teamArray.push({
             'userId': data[x].userId,
             'team_name': data[x].team_name,
-            'tournaments' : [[data[x].tournamentId, data[x].name]]
+            'tournaments' : [{"id": data[x].tournamentId, "name": data[x].name}]
           });
           tournamentWinCount[data[x].team_name] = 1;
           i++;
