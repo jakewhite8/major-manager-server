@@ -2,10 +2,11 @@ module.exports = (connection) => {
   const Tournament = function (tournament) {
     this.name = tournament.name;
     this.start_date = tournament.start_date;
+    this.round = tournament.round;
   };
 
   Tournament.create = (tournament, result) => {
-    connection.query(`INSERT INTO tournaments(name, start_date) VALUES('${tournament.name}', '${tournament.start_date}')`, (tournamentErr, tournamentRes) => {
+    connection.query(`INSERT INTO tournaments(name, start_date, round) VALUES('${tournament.name}', '${tournament.start_date}', '${tournament.round}')`, (tournamentErr, tournamentRes) => {
       if (tournamentErr) {
         console.log(tournamentErr)
         result(tournamentErr, null);
@@ -139,8 +140,8 @@ module.exports = (connection) => {
     });
   };
 
-  Tournament.getTournamentNameFromId = (id, result) => {
-    connection.query('SELECT name FROM tournaments WHERE id = ?', id, (err, res) => {
+  Tournament.getTournamentInfoFromId = (id, result) => {
+    connection.query('SELECT name, round FROM tournaments WHERE id = ?', id, (err, res) => {
       if (err) {
         console.log('Error: ', err);
         result(err, null);

@@ -14,7 +14,8 @@ exports.createTournament = (req, res) => {
   }
   const tournament = new Tournament({
     name: req.body.name,
-    start_date: req.body.start_date
+    start_date: req.body.start_date,
+    round: 0
   });
 
   Tournament.create(tournament, (err, data) => {
@@ -123,8 +124,8 @@ exports.tournamentPlayerData = (req, res) => {
       return;
     }
 
-    Tournament.getTournamentNameFromId(req.params.id, (tournamentNameErr, tournamentNameData) => {
-      if (tournamentNameErr) {
+    Tournament.getTournamentInfoFromId(req.params.id, (tournamentInfoErr, tournamentInfoData) => {
+      if (tournamentInfoErr) {
         res.send({
           message: 'Error getting tournament name',
         });
@@ -165,7 +166,7 @@ exports.tournamentPlayerData = (req, res) => {
         }
 
         const tournamentPlayerObj = {
-          tournamentName: tournamentNameData.name,
+          tournamentName: tournamentInfoData.name,
           playerData: playerDataByTier,
           selectedPlayers,
         };
@@ -185,8 +186,8 @@ exports.getLeaderboardData = (req, res) => {
       return;
     }
 
-    Tournament.getTournamentNameFromId(req.params.id, (tournamentNameErr, tournamentNameData) => {
-      if (tournamentNameErr) {
+    Tournament.getTournamentInfoFromId(req.params.id, (tournamentInfoErr, tournamentInfoData) => {
+      if (tournamentInfoErr) {
         res.send({
           message: 'Error finding tournament name',
         });
@@ -247,9 +248,8 @@ exports.getLeaderboardData = (req, res) => {
           selectedPlayer['selected'] = arrayOfTopScoreIds.indexOf(selectedPlayer.playerId) > -1 ? true : false;
         }
       }
-
       const tournamentInformation = {
-        tournamentName: tournamentNameData,
+        tournament: tournamentInfoData,
         leaderboard,
         scoresByTeam
       };
