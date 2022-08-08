@@ -232,9 +232,12 @@ exports.getLeaderboardData = (req, res) => {
         let finalScore = 0;
         for (let j = 0; j < topScoresByTeam[team].length; j++) {
           if (!scoresByTeam[team]) {
-            scoresByTeam[team] = 0;
+            scoresByTeam[team] = {
+              score: 0,
+              position: ''
+            }
           }
-          scoresByTeam[team] += topScoresByTeam[team][j].score;
+          scoresByTeam[team].score += topScoresByTeam[team][j].score;
         }
       }
 
@@ -248,7 +251,43 @@ exports.getLeaderboardData = (req, res) => {
           selectedPlayer['selected'] = arrayOfTopScoreIds.indexOf(selectedPlayer.playerId) > -1 ? true : false;
         }
       }
+
+      // Sort Leaderboard into an Array based off their calculated score
+      let sortedLeaderboardArray = []
+      for (const team in leaderboard) {
+        sortedLeaderboardArray.push(leaderboard[team]);
+      }
+      sortedLeaderboardArray.sort((a,b) => scoresByTeam[a[0].team_name].score - scoresByTeam[b[0].team_name].score)
+
+      // Calculate each Team's position in the Tournament
+      for (let i = 0; i < sortedLeaderboardArray.length; i++) {
+        let currentTeamName = sortedLeaderboardArray[i][0].team_name
+        let currentTeamScore = scoresByTeam[currentTeamName].score
+        // The first Team in the array is either in first place or is tied for first
+        if (i == 0) {
+          if (sortedLeaderboardArray[i+1] && scoresByTeam[sortedLeaderboardArray[i+1][0].team_name].score == currentTeamScore) {
+            scoresByTeam[currentTeamName].position = 'T1'
+          } else {
+            scoresByTeam[currentTeamName].position = '1'
+          }
+        } else {
+          // Check if the current Team's score is the same as the one before it in the sorted array
+          let previousTeamName = sortedLeaderboardArray[i-1][0].team_name
+          if (scoresByTeam[previousTeamName].score == currentTeamScore) {
+            // Current Team is tied with the previous Team in the sorted array
+            scoresByTeam[currentTeamName].position = scoresByTeam[previousTeamName].position
+          } else if (sortedLeaderboardArray[i+1] && scoresByTeam[sortedLeaderboardArray[i+1][0].team_name].score == currentTeamScore){
+            // Current Team is tied with the next Team in the sorted array
+            scoresByTeam[currentTeamName].position = `T${i + 1}`
+          } else {
+            // Current Team is not tied with anyone
+            scoresByTeam[currentTeamName].position = `${i + 1}`
+          }
+        }
+      }
+
       const tournamentInformation = {
+        leaderboardArray: sortedLeaderboardArray,
         tournament: tournamentInfoData,
         leaderboard,
         scoresByTeam
