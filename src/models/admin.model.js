@@ -1,12 +1,16 @@
 module.exports = (connection) => {
   const Admin = {};
 
+  const handleError = (error, result) => {
+    console.error(error);
+    result(error, null);
+  }
+
   Admin.addPlayersToPlayersTable = (playerData, result) => {
     // Get an array of all Players in database
     connection.query('SELECT * from players', (selectPlayersErr, selectPlayersRes) => {
       if (selectPlayersErr) {
-        console.log('Error: ', selectPlayersErr);
-        result(selectPlayersErr, null);
+        handleError(selectPlayersErr, result);
         return;
       }
       // eslint-disable-next-line no-control-regex
@@ -95,8 +99,7 @@ module.exports = (connection) => {
       if (newPlayers.length) {
         connection.query(`INSERT INTO players(first_name, last_name) VALUES(${sqlQueryValues.join('), (')})`, (insertPlayersErr, insertPlayersRes) => {
           if (insertPlayersErr) {
-            console.log('Error: ', insertPlayersErr);
-            result(insertPlayersErr, null);
+            handleError(insertPlayersErr, result);
             return;
           }
 
@@ -125,8 +128,7 @@ module.exports = (connection) => {
     }
     connection.query(`SELECT * FROM players_tournaments where tournament_id = ${tournamentId} AND player_id IN (${playerIds.join(', ')})`, (selectTournamentErr, selectTournamentRes) => {
       if (selectTournamentErr) {
-        console.log('Error: ', selectTournamentErr);
-        result(selectTournamentErr, null);
+        handleError(selectTournamentErr, result)
         return;
       }
 
@@ -168,8 +170,7 @@ module.exports = (connection) => {
         }
         connection.query(`INSERT INTO players_tournaments(player_id, tournament_id, score, tier) VALUES(${newPlayerData.join('), (')})`, (insertTournamentErr, insertTournamentRes) => {
           if (insertTournamentErr) {
-            console.log('Error: ', insertTournamentErr);
-            result(insertTournamentErr, null);
+            handleError(insertTournamentErr, result);
             return;
           }
           result(null, insertTournamentRes);
@@ -209,8 +210,7 @@ module.exports = (connection) => {
 
         connection.query(query, (updateTournamentErr, updateTournamentRes) => {
           if (updateTournamentErr) {
-            console.log('Error: ', updateTournamentErr);
-            result(updateTournamentErr, null);
+            handleError(updateTournamentErr, result);
             return;
           }
 
