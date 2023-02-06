@@ -5,12 +5,16 @@ module.exports = (connection) => {
     this.password = user.password;
   };
 
+  const handleError = (error, result) => {
+    console.error(error);
+    result(error, null);
+  };
+
   User.create = (newUser, result) => {
     // execute() may be the better then using query()
     connection.query('INSERT INTO users SET ?', newUser, (userErr, userRes) => {
       if (userErr) {
-        console.error(userErr);
-        result(userErr, null);
+        handleError(userErr, result);
         return;
       }
       console.log(`Create user: ${JSON.stringify({ id: userRes.insertId, ...newUser })}`);
@@ -18,8 +22,7 @@ module.exports = (connection) => {
       // Add user to user_roles table
       connection.query('INSERT INTO user_roles(userId, roleId) VALUES(?, ?)', [userRes.insertId, 1], (err, res) => {
         if (err) {
-          console.error(err);
-          result(err, null);
+          handleError(err, result);
           return;
         }
         console.log(`User added to user_roles table: ${JSON.stringify(res)}`);
@@ -31,8 +34,7 @@ module.exports = (connection) => {
   User.findOne = (email, result) => {
     connection.query('SELECT * FROM users WHERE email = ?', email, (err, res) => {
       if (err) {
-        console.log('Error: ', err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
 
@@ -49,8 +51,7 @@ module.exports = (connection) => {
   User.findRoles = (userId, result) => {
     connection.query('SELECT * FROM user_roles WHERE userId = ?', userId, (err, res) => {
       if (err) {
-        console.log('Error: ', err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
 
@@ -67,8 +68,7 @@ module.exports = (connection) => {
   User.getTeam = (userId, tournamentId, result) => {
     connection.query(`SELECT * FROM users_tournaments WHERE userId = ${userId} AND tournamentId = ${tournamentId}`, (getTeamErr, getTeamRes) => {
       if (getTeamErr) {
-        console.log('Error: ', getTeamErr);
-        result(getTeamErr, null);
+        handleError(getTeamErr, result);
         return;
       }
 
@@ -81,8 +81,7 @@ module.exports = (connection) => {
 
         connection.query(`SELECT * FROM user_tournament_players WHERE userTournamentRelationId = ${userTournamentRelationId}`, (getPlayersErr, getPlayersRes) => {
           if (getPlayersErr) {
-            console.log('Error: ', getPlayersErr);
-            result(getPlayersErr, null);
+            handleError(getPlayersErr, result);
             return;
           }
 
@@ -98,8 +97,7 @@ module.exports = (connection) => {
   User.updateUser = (user, result) => {
     connection.query(`UPDATE users SET team_name = '${user.team_name}' , email = '${user.email}' WHERE id = ${user.user_id}`, (err, res) => {
       if (err) {
-        console.log('Error: ', err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
 
@@ -111,8 +109,7 @@ module.exports = (connection) => {
   User.updateUserWins = (data, result) => {
     connection.query(`INSERT INTO user_wins(userId, tournamentId) VALUES(${data.userId}, ${data.tournamentId})`, (err, res) => {
       if (err) {
-        console.log('Error: ', err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
 
