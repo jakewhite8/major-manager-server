@@ -5,11 +5,15 @@ module.exports = (connection) => {
     this.round = tournament.round;
   };
 
+  const handleError = (error, result) => {
+    console.error(error);
+    result(error, null);
+  }
+
   Tournament.create = (tournament, result) => {
     connection.query(`INSERT INTO tournaments(name, start_date, round) VALUES('${tournament.name}', '${tournament.start_date}', '${tournament.round}')`, (tournamentErr, tournamentRes) => {
       if (tournamentErr) {
-        console.log(tournamentErr)
-        result(tournamentErr, null);
+        handleError(tournamentErr, result);
         return;
       }
       result(null, tournamentRes)
@@ -19,7 +23,7 @@ module.exports = (connection) => {
   Tournament.findOne = (tournament_name, result) => {
     connection.query(`SELECT * FROM tournaments WHERE name = '${tournament_name}'`, (err, res) => {
       if (err) {
-        result(err, null);
+        handleError(err, result);
         return;
       }
       if (res.length) {
@@ -34,8 +38,7 @@ module.exports = (connection) => {
     // Active tournaments are tournaments that have not ended yet
     connection.query('SELECT * FROM tournaments WHERE datediff(start_date, curdate()) > -7', (err, res) => {
       if (err) {
-        console.log('Error: ', err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
       result(null, res);
@@ -46,8 +49,7 @@ module.exports = (connection) => {
     // Return IDs and the name of tournaments that have ended
     connection.query('select * from tournaments where timestampdiff(hour, start_date, date_sub(current_timestamp(), interval 4 hour)) > 80;', (err, res) => {
       if (err) {
-        console.log('Error: ', err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
       if (res.length) {
@@ -62,8 +64,7 @@ module.exports = (connection) => {
     // Upcoming tournaments are tournaments that have not started yet
     connection.query('SELECT * FROM tournaments WHERE datediff(start_date, curdate()) > -1', (err, res) => {
       if (err) {
-        console.log('Error: ', err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
       if (res.length) {
@@ -78,8 +79,7 @@ module.exports = (connection) => {
     // Get list of tournaments a user is in
     connection.query(`SELECT * FROM users_tournaments WHERE userId = ${id}`, (usersTournamentsErr, usersTournamentsRes) => {
       if (usersTournamentsErr) {
-        console.log('Error: ', usersTournamentsErr);
-        result(usersTournamentsErr, null);
+        handleError(usersTournamentsErr, result);
         return;
       }
       if (usersTournamentsRes.length) {
@@ -91,8 +91,7 @@ module.exports = (connection) => {
         // Get the details of the tournaments a user is in
         connection.query(`SELECT * FROM tournaments WHERE id IN (${tournamentIds.join(', ')})`, (tournamentsErr, tournamentRes) => {
           if (tournamentsErr) {
-            console.log('Error: ', tournamentsErr);
-            result(tournamentsErr, null);
+            handleError(tournamentsErr, result);
             return;
           }
           if (tournamentRes.length) {
@@ -112,8 +111,7 @@ module.exports = (connection) => {
     // Get list of tournaments a user is in
     connection.query(`SELECT * FROM users_tournaments WHERE userId = ${id}`, (usersTournamentsErr, usersTournamentsRes) => {
       if (usersTournamentsErr) {
-        console.log('Error: ', usersTournamentsErr);
-        result(usersTournamentsErr, null);
+        handleError(usersTournamentsErr, result);
         return;
       }
       if (usersTournamentsRes.length) {
@@ -125,12 +123,9 @@ module.exports = (connection) => {
         // Get the details of the tournaments a user was in
         connection.query(`SELECT * FROM tournaments WHERE id IN (${tournamentIds.join(', ')})`, (tournamentsErr, tournamentRes) => {
           if (tournamentsErr) {
-            console.log('Error: ', tournamentsErr);
-            result(tournamentsErr, null);
+            handleError(tournamentsErr, result);
             return;
           }
-          // console.log('tournamentRes')
-          // console.log(tournamentRes)
           result(null, tournamentRes);
         });
       } else {
@@ -143,8 +138,7 @@ module.exports = (connection) => {
   Tournament.getTournamentInfoFromId = (id, result) => {
     connection.query('SELECT name, round FROM tournaments WHERE id = ?', id, (err, res) => {
       if (err) {
-        console.log('Error: ', err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
       if (res.length) {
@@ -158,8 +152,7 @@ module.exports = (connection) => {
   Tournament.findPlayerData = (id, result) => {
     connection.query('SELECT player_id, tier, score FROM players_tournaments WHERE tournament_id = ?', id, (err, res) => {
       if (err) {
-        console.log('Error: ', err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
       if (res.length) {
@@ -174,8 +167,7 @@ module.exports = (connection) => {
     // First check if this relation has been established
     connection.query('SELECT id FROM users_tournaments WHERE tournamentId = ? AND userId= ?', [tournamentId, userId], (err, res) => {
       if (err) {
-        console.error(err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
 
@@ -203,8 +195,7 @@ module.exports = (connection) => {
         // Delete existing team for a particular tournament
         connection.query(`DELETE FROM user_tournament_players WHERE userTournamentRelationId=${userTournamentRelationId}`, (deleteTournPlayersErr) => {
           if (deleteTournPlayersErr) {
-            console.error(deleteTournPlayersErr);
-            result(deleteTournPlayersErr, null);
+            handleError(deleteTournPlayersErr, result);
             return;
           }
 
@@ -212,8 +203,7 @@ module.exports = (connection) => {
           // Insert new team for a particular tournament
           connection.query(`INSERT INTO user_tournament_players(userTournamentRelationId, playerId) VALUES(${sqlInsertStringHelper})`, (insertPlayersErr, insertPlayersRes) => {
             if (insertPlayersErr) {
-              console.error(insertPlayersErr);
-              result(insertPlayersErr, null);
+              handleError(insertPlayersErr, result);
               return;
             }
 
@@ -224,8 +214,7 @@ module.exports = (connection) => {
         // Create relation between a user and tournament (a team)
         connection.query(`INSERT INTO users_tournaments(userId, tournamentId) VALUES (${[userId, tournamentId]})`, (createTeamErr, createTeamRes) => {
           if (createTeamErr) {
-            console.error(createTeamErr);
-            result(createTeamErr, null);
+            handleError(createTeamErr, result);
             return;
           }
 
@@ -233,8 +222,7 @@ module.exports = (connection) => {
           const sqlStringHelper = createSqlValuesString(createTeamRes.insertId, playerIds);
           connection.query(`INSERT INTO user_tournament_players(userTournamentRelationId, playerId) VALUES(${sqlStringHelper})`, (insertPlayersErr, insertPlayersRes) => {
             if (insertPlayersErr) {
-              console.error(insertPlayersErr);
-              result(insertPlayersErr, null);
+              handleError(insertPlayersErr, result);
               return;
             }
             result(null, insertPlayersRes);
@@ -258,8 +246,7 @@ module.exports = (connection) => {
 
     connection.query(queryHelper, (err, res) => {
       if (err) {
-        console.log('Error: ', err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
       result(null, res);
@@ -272,8 +259,7 @@ module.exports = (connection) => {
       INNER JOIN users ON users.id = users_tournaments.userId AND users_tournaments.tournamentId = ${tournamentId};`,
         (err, res) => {
       if (err) {
-        console.log('Error: ', err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
       result(null, res);
@@ -287,8 +273,7 @@ module.exports = (connection) => {
       INNER JOIN tournaments ON user_wins.tournamentId = tournaments.id
       ORDER BY user_wins.userId;`, (err, res) => {
       if (err) {
-        console.log('Error: ', err);
-        result(err, null);
+        handleError(err, result);
         return;
       }
       result(null, res);
