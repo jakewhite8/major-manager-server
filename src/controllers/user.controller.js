@@ -1,4 +1,5 @@
 const db = require('../models');
+
 const User = db.user;
 
 exports.allAccess = (req, res) => {
@@ -18,7 +19,7 @@ exports.adminPage = (req, res) => {
 };
 
 exports.updateUser = (req, res) => {
-  if(!req.body) {
+  if (!req.body) {
     res.status(400).send({
       message: 'Content can not be empty',
     });
@@ -26,32 +27,32 @@ exports.updateUser = (req, res) => {
   const user = {
     user_id: req.userId,
     team_name: req.body.team_name,
-    email: req.body.email
-  }
+    email: req.body.email,
+  };
   User.updateUser(user, (updateUserErr, updateUserRes) => {
     if (updateUserErr) {
       res.send({
-        message: 'Error updating user'
+        message: 'Error updating user',
       });
     }
     res.status(200).send(user);
-  })
+  });
 };
 
 // Add or update the user_wins table with a team that won a given tournament
 exports.addWinningTeam = (req, res) => {
-  if(!req.body) {
+  if (!req.body) {
     res.status(400).send({
       message: 'Content can not be empty',
     });
   }
 
-  User.updateUserWins({userId: req.body.userId, tournamentId: req.body.tournamentId}, (updateUserWinsErr, updateUserWinsRes) => {
+  User.updateUserWins({ userId: req.body.userId, tournamentId: req.body.tournamentId }, (updateUserWinsErr, updateUserWinsRes) => {
     if (updateUserWinsErr) {
       res.send({
-        message: 'Error updating a users wins'
+        message: 'Error updating a users wins',
       });
     }
     res.status(200).send(updateUserWinsRes);
-  })
+  });
 };

@@ -103,7 +103,7 @@ module.exports = (connection) => {
 
       result(null, res);
     });
-  }
+  };
 
   // Add or update the user_wins table with a team that won a given tournament
   User.updateUserWins = (data, result) => {
@@ -115,7 +115,7 @@ module.exports = (connection) => {
 
       result(null, res);
     });
-  }
+  };
 
   return User;
 };

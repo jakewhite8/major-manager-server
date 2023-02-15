@@ -8,7 +8,7 @@ module.exports = (connection) => {
   const handleError = (error, result) => {
     console.error(error);
     result(error, null);
-  }
+  };
 
   Tournament.create = (tournament, result) => {
     connection.query(`INSERT INTO tournaments(name, start_date, round) VALUES('${tournament.name}', '${tournament.start_date}', '${tournament.round}')`, (tournamentErr, tournamentRes) => {
@@ -16,8 +16,8 @@ module.exports = (connection) => {
         handleError(tournamentErr, result);
         return;
       }
-      result(null, tournamentRes)
-    }) 
+      result(null, tournamentRes);
+    });
   };
 
   Tournament.findOne = (tournament_name, result) => {
@@ -31,7 +31,7 @@ module.exports = (connection) => {
         return;
       }
       result(null, null);
-    })
+    });
   };
 
   Tournament.findActive = (result) => {
@@ -257,7 +257,7 @@ module.exports = (connection) => {
   Tournament.getTournamentTeamNames = (tournamentId, result) => {
     connection.query(`SELECT users.id, users.team_name FROM users_tournaments 
       INNER JOIN users ON users.id = users_tournaments.userId AND users_tournaments.tournamentId = ${tournamentId};`,
-        (err, res) => {
+    (err, res) => {
       if (err) {
         handleError(err, result);
         return;

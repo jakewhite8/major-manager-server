@@ -1,3 +1,3 @@
 module.exports = {
-  totalScoresCounted : 4
+  totalScoresCounted: 4,
 };

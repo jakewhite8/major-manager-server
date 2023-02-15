@@ -4,7 +4,7 @@ module.exports = (connection) => {
   const handleError = (error, result) => {
     console.error(error);
     result(error, null);
-  }
+  };
 
   Admin.addPlayersToPlayersTable = (playerData, result) => {
     // Get an array of all Players in database
@@ -128,7 +128,7 @@ module.exports = (connection) => {
     }
     connection.query(`SELECT * FROM players_tournaments where tournament_id = ${tournamentId} AND player_id IN (${playerIds.join(', ')})`, (selectTournamentErr, selectTournamentRes) => {
       if (selectTournamentErr) {
-        handleError(selectTournamentErr, result)
+        handleError(selectTournamentErr, result);
         return;
       }
 
@@ -184,8 +184,8 @@ module.exports = (connection) => {
         for (let i = 0; i < selectTournamentRes.length; i += 1) {
           const updatedPlayer = playerTournamentData.find(
             (playerObject) => playerObject.id === selectTournamentRes[i].player_id,
-          )
-          
+          );
+
           if (updatedPlayer.cut) {
             updatedPlayer.score += 8;
           }
@@ -195,7 +195,7 @@ module.exports = (connection) => {
             selectTournamentRes[i].player_id,
             tournamentId,
             selectTournamentRes[i].tier,
-            updatedPlayer.cut
+            updatedPlayer.cut,
           ]);
         }
 

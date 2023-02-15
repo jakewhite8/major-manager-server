@@ -41,13 +41,13 @@ module.exports = function (app) {
   app.put(
     '/api/v1/update_user',
     [authJwt.verifyToken],
-    controller.updateUser
+    controller.updateUser,
   );
 
   // Add or update the user_wins table with a team that won a given tournament
   app.post(
     '/api/v1/add_winning_team',
     [authJwt.verifyToken, authJwt.isAdmin],
-    controller.addWinningTeam
-  )
+    controller.addWinningTeam,
+  );
 };
