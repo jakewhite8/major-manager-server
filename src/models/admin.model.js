@@ -72,7 +72,7 @@ module.exports = (connection) => {
                 last_name: selectPlayersRes[j].last_name,
                 score: playerData[i].score,
                 tier: playerData[i].tier || '',
-                cut: playerData[i].position == 'CUT',
+                cut: playerData[i].position === 'CUT',
               });
               addToInsertList = false;
               break;
@@ -158,7 +158,8 @@ module.exports = (connection) => {
       if (newPlayers.length) {
         const newPlayerData = [];
         for (let i = 0; i < playerTournamentData.length; i += 1) {
-          const tier = playerTournamentData[i] && playerTournamentData[i].tier ? playerTournamentData[i].tier : 6;
+          const tier = playerTournamentData[i] && playerTournamentData[i].tier
+            ? playerTournamentData[i].tier : 6;
           if (newPlayers.indexOf(playerTournamentData[i].id) > -1) {
             newPlayerData.push([
               playerTournamentData[i].id,

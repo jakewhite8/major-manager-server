@@ -211,7 +211,8 @@ exports.getLeaderboardData = (req, res) => {
           // Remove the highest score in the array if the selected player has a lower score
           topScoresByTeam[selectedTeam].sort((a, b) => a.score - b.score);
           const highestScoreInArrayLocation = topScoresByTeam[selectedTeam].length - 1;
-          if (topScoresByTeam[selectedTeam][highestScoreInArrayLocation].score > selectedPlayer.score) {
+          if (topScoresByTeam[selectedTeam][highestScoreInArrayLocation].score
+            > selectedPlayer.score) {
             topScoresByTeam[selectedTeam][highestScoreInArrayLocation] = {
               score: selectedPlayer.score,
               playerId: selectedPlayer.playerId,
@@ -229,8 +230,7 @@ exports.getLeaderboardData = (req, res) => {
       // Iterate through the topScoresByTeam object to get a total score for each team
       const scoresByTeam = {};
       for (const team in topScoresByTeam) {
-        const finalScore = 0;
-        for (let j = 0; j < topScoresByTeam[team].length; j++) {
+        for (let j = 0; j < topScoresByTeam[team].length; j += 1) {
           if (!scoresByTeam[team]) {
             scoresByTeam[team] = {
               score: 0,
@@ -241,10 +241,11 @@ exports.getLeaderboardData = (req, res) => {
         }
       }
 
-      // Add a 'selected' property for each player where a team uses their score towards their total score
+      // Add a 'selected' property for each player where a team uses their score
+      // towards their total score
       for (const team in leaderboard) {
         const arrayOfTopScoreIds = topScoresByTeam[team].map((player) => player.playerId);
-        for (let k = 0; k < leaderboard[team].length; k++) {
+        for (let k = 0; k < leaderboard[team].length; k += 1) {
           const selectedPlayer = leaderboard[team][k];
           // If a player's score is in the list of top players array (for a particular team)
           // then the selected attribute should equal true
@@ -260,12 +261,14 @@ exports.getLeaderboardData = (req, res) => {
       sortedLeaderboardArray.sort((a, b) => scoresByTeam[a[0].team_name].score - scoresByTeam[b[0].team_name].score);
 
       // Calculate each Team's position in the Tournament
-      for (let i = 0; i < sortedLeaderboardArray.length; i++) {
+      for (let i = 0; i < sortedLeaderboardArray.length; i += 1) {
         const currentTeamName = sortedLeaderboardArray[i][0].team_name;
         const currentTeamScore = scoresByTeam[currentTeamName].score;
         // The first Team in the array is either in first place or is tied for first
-        if (i == 0) {
-          if (sortedLeaderboardArray[i + 1] && scoresByTeam[sortedLeaderboardArray[i + 1][0].team_name].score == currentTeamScore) {
+        if (i === 0) {
+          if (
+            sortedLeaderboardArray[i + 1]
+            && scoresByTeam[sortedLeaderboardArray[i + 1][0].team_name].score == currentTeamScore) {
             scoresByTeam[currentTeamName].position = 'T1';
           } else {
             scoresByTeam[currentTeamName].position = '1';
@@ -276,7 +279,9 @@ exports.getLeaderboardData = (req, res) => {
           if (scoresByTeam[previousTeamName].score == currentTeamScore) {
             // Current Team is tied with the previous Team in the sorted array
             scoresByTeam[currentTeamName].position = scoresByTeam[previousTeamName].position;
-          } else if (sortedLeaderboardArray[i + 1] && scoresByTeam[sortedLeaderboardArray[i + 1][0].team_name].score == currentTeamScore) {
+          } else if (
+            sortedLeaderboardArray[i + 1]
+            && scoresByTeam[sortedLeaderboardArray[i + 1][0].team_name].score == currentTeamScore) {
             // Current Team is tied with the next Team in the sorted array
             scoresByTeam[currentTeamName].position = `T${i + 1}`;
           } else {
@@ -310,7 +315,8 @@ exports.getTournamentTeamNames = (req, res) => {
   });
 };
 
-// Return an array of Teams with the Tournaments they have won as well as an object with the number of wins each Team has`
+// Return an array of Teams with the Tournaments they have won
+// as well as an object with the number of wins each Team has
 exports.getLeagueLeaderboard = (req, res) => {
   Tournament.getLeagueLeaderboard(req, (err, data) => {
     if (err) {
@@ -335,7 +341,7 @@ exports.getLeagueLeaderboard = (req, res) => {
     // i iterates through teamArray
     const teamArray = [];
     const tournamentWinCount = {};
-    for (let x = 0, i = 0; x < data.length; x++) {
+    for (let x = 0, i = 0; x < data.length; x += 1) {
       if (x == 0) {
         teamArray.push({
           userId: data[x].userId,
@@ -355,7 +361,7 @@ exports.getLeagueLeaderboard = (req, res) => {
           tournaments: [{ id: data[x].tournamentId, name: data[x].name }],
         });
         tournamentWinCount[data[x].team_name] = 1;
-        i++;
+        i += 1;
       }
     }
 

@@ -20,8 +20,8 @@ module.exports = (connection) => {
     });
   };
 
-  Tournament.findOne = (tournament_name, result) => {
-    connection.query(`SELECT * FROM tournaments WHERE name = '${tournament_name}'`, (err, res) => {
+  Tournament.findOne = (tournamentName, result) => {
+    connection.query(`SELECT * FROM tournaments WHERE name = '${tournamentName}'`, (err, res) => {
       if (err) {
         handleError(err, result);
         return;
@@ -266,7 +266,8 @@ module.exports = (connection) => {
     });
   };
 
-  // Return the winning Team of each Tournament [userId, users.team_name, tournament.name, tournamentId]
+  // Return the winning Team of each Tournament
+  // [userId, users.team_name, tournament.name, tournamentId]
   Tournament.getLeagueLeaderboard = (tournamentId, result) => {
     connection.query(`SELECT user_wins.userId, users.team_name, user_wins.tournamentId, tournaments.name FROM user_wins 
       INNER JOIN users ON users.id = user_wins.userId 

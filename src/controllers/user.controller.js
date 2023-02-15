@@ -29,7 +29,7 @@ exports.updateUser = (req, res) => {
     team_name: req.body.team_name,
     email: req.body.email,
   };
-  User.updateUser(user, (updateUserErr, updateUserRes) => {
+  User.updateUser(user, (updateUserErr) => {
     if (updateUserErr) {
       res.send({
         message: 'Error updating user',
@@ -47,7 +47,10 @@ exports.addWinningTeam = (req, res) => {
     });
   }
 
-  User.updateUserWins({ userId: req.body.userId, tournamentId: req.body.tournamentId }, (updateUserWinsErr, updateUserWinsRes) => {
+  User.updateUserWins({
+    userId: req.body.userId,
+    tournamentId: req.body.tournamentId,
+  }, (updateUserWinsErr, updateUserWinsRes) => {
     if (updateUserWinsErr) {
       res.send({
         message: 'Error updating a users wins',
