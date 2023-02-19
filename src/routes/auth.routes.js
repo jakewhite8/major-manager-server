@@ -21,4 +21,6 @@ module.exports = (app) => {
   );
 
   app.post('/api/auth/signin', controller.signin);
+
+  app.post('/recaptcha/validate', controller.recaptcha);
 };

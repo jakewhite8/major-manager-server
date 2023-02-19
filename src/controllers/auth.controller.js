@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const request = require('request');
 const db = require('../models');
 const config = require('../config/auth.config');
 
@@ -71,4 +72,33 @@ exports.signin = (req, res) => {
       });
     });
   });
+};
+
+exports.recaptcha = (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      message: 'Content cannot be empty',
+    });
+    return;
+  }
+  if (!req.body.Response) {
+    return res.status(400).json({message: 'Recaptcha token required'});
+  }
+  const verifyRecaptchaOptions = {
+    url: "https://www.google.com/recaptcha/api/siteverify",
+    json: true,
+    form: {
+      secret: config.recaptcha,
+      response: req.body.Response
+    }
+  };
+  request.post(verifyRecaptchaOptions, function (err, response, body) {
+    if (err) {
+      return res.status(500).json({message: 'Error verifying reCAPTCHA with Google'});
+    }
+    if (!body.success) {
+      return res.status(500).json({message: body["error-codes"].join(".")});
+    }
+    res.send(response)
+  })
 };
