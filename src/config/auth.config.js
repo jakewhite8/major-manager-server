@@ -1,4 +1,4 @@
 module.exports = {
-  secret: 'red-bull-energy',
-  recaptcha: '6LcReZQkAAAAAA17cpOOmigICiBBwR8brLwp1gRJ'
+  secret: process.env.AUTH_SECRET_KEY,
+  recaptcha: process.env.RECAPTCHA_SECRET_KEY
 };
