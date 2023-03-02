@@ -229,7 +229,9 @@ exports.getLeaderboardData = (req, res) => {
 
       // Iterate through the topScoresByTeam object to get a total score for each team
       const scoresByTeam = {};
-      for (const team in topScoresByTeam) {
+      const topScoresByTeamKeys = Object.keys(topScoresByTeam);
+      for (let index = 0; index < topScoresByTeamKeys.length; index += 1) {
+        const team = topScoresByTeamKeys[index];
         for (let j = 0; j < topScoresByTeam[team].length; j += 1) {
           if (!scoresByTeam[team]) {
             scoresByTeam[team] = {
@@ -241,9 +243,10 @@ exports.getLeaderboardData = (req, res) => {
         }
       }
 
-      // Add a 'selected' property for each player where a team uses their score
-      // towards their total score
-      for (const team in leaderboard) {
+      // Add a 'selected' property to each player that a team uses for their total score
+      const teams = Object.keys(leaderboard);
+      for (let i = 0; i < teams.length; i += 1) {
+        const team = teams[i];
         const arrayOfTopScoreIds = topScoresByTeam[team].map((player) => player.playerId);
         for (let k = 0; k < leaderboard[team].length; k += 1) {
           const selectedPlayer = leaderboard[team][k];
@@ -255,11 +258,14 @@ exports.getLeaderboardData = (req, res) => {
 
       // Sort Leaderboard into an Array based off their calculated score
       const sortedLeaderboardArray = [];
-      for (const team in leaderboard) {
+      for (let i = 0; i < teams.length; i += 1) {
+        const team = teams[i];
         sortedLeaderboardArray.push(leaderboard[team]);
       }
-      sortedLeaderboardArray.sort((a, b) => scoresByTeam[a[0].team_name].score - scoresByTeam[b[0].team_name].score);
-
+      sortedLeaderboardArray
+        .sort((a, b) => scoresByTeam[a[0].team_name].score - scoresByTeam[b[0].team_name].score);
+      console.log('sortedLeaderboardArray');
+      console.log(sortedLeaderboardArray);
       // Calculate each Team's position in the Tournament
       for (let i = 0; i < sortedLeaderboardArray.length; i += 1) {
         const currentTeamName = sortedLeaderboardArray[i][0].team_name;
@@ -268,7 +274,7 @@ exports.getLeaderboardData = (req, res) => {
         if (i === 0) {
           if (
             sortedLeaderboardArray[i + 1]
-            && scoresByTeam[sortedLeaderboardArray[i + 1][0].team_name].score == currentTeamScore) {
+            && scoresByTeam[sortedLeaderboardArray[i + 1][0].team_name].score === currentTeamScore) {
             scoresByTeam[currentTeamName].position = 'T1';
           } else {
             scoresByTeam[currentTeamName].position = '1';
@@ -276,12 +282,12 @@ exports.getLeaderboardData = (req, res) => {
         } else {
           // Check if the current Team's score is the same as the one before it in the sorted array
           const previousTeamName = sortedLeaderboardArray[i - 1][0].team_name;
-          if (scoresByTeam[previousTeamName].score == currentTeamScore) {
+          if (scoresByTeam[previousTeamName].score === currentTeamScore) {
             // Current Team is tied with the previous Team in the sorted array
             scoresByTeam[currentTeamName].position = scoresByTeam[previousTeamName].position;
           } else if (
             sortedLeaderboardArray[i + 1]
-            && scoresByTeam[sortedLeaderboardArray[i + 1][0].team_name].score == currentTeamScore) {
+            && scoresByTeam[sortedLeaderboardArray[i + 1][0].team_name].score === currentTeamScore) {
             // Current Team is tied with the next Team in the sorted array
             scoresByTeam[currentTeamName].position = `T${i + 1}`;
           } else {
@@ -342,14 +348,14 @@ exports.getLeagueLeaderboard = (req, res) => {
     const teamArray = [];
     const tournamentWinCount = {};
     for (let x = 0, i = 0; x < data.length; x += 1) {
-      if (x == 0) {
+      if (x === 0) {
         teamArray.push({
           userId: data[x].userId,
           team_name: data[x].team_name,
           tournaments: [{ id: data[x].tournamentId, name: data[x].name }],
         });
         tournamentWinCount[data[x].team_name] = 1;
-      } else if (data[x].userId == teamArray[i].userId) {
+      } else if (data[x].userId === teamArray[i].userId) {
         // Team has already been created
         teamArray[i].tournaments.push({ id: data[x].tournamentId, name: data[x].name });
         tournamentWinCount[data[x].team_name] += 1;

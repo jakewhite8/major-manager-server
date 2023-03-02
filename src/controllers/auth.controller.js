@@ -76,12 +76,14 @@ exports.signin = (req, res) => {
 
 exports.recaptcha = (req, res) => {
   if (!req.body) {
-    return res.status(400).send({
+    res.status(400).send({
       message: 'Content cannot be empty',
     });
+    return;
   }
   if (!req.body.Response) {
-    return res.status(400).json({ message: 'Recaptcha token required' });
+    res.status(400).json({ message: 'Recaptcha token required' });
+    return;
   }
   const verifyRecaptchaOptions = {
     url: 'https://www.google.com/recaptcha/api/siteverify',
