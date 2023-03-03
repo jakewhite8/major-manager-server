@@ -270,11 +270,11 @@ exports.getLeaderboardData = (req, res) => {
       for (let i = 0; i < sortedLeaderboardArray.length; i += 1) {
         const currentTeamName = sortedLeaderboardArray[i][0].team_name;
         const currentTeamScore = scoresByTeam[currentTeamName].score;
+        const nextTeamName = sortedLeaderboardArray[i + 1] ?
+            sortedLeaderboardArray[i + 1][0].team_name : false;
         // The first Team in the array is either in first place or is tied for first
         if (i === 0) {
-          if (
-            sortedLeaderboardArray[i + 1]
-            && scoresByTeam[sortedLeaderboardArray[i + 1][0].team_name].score === currentTeamScore) {
+          if (nextTeamName && scoresByTeam[nextTeamName].score === currentTeamScore) {
             scoresByTeam[currentTeamName].position = 'T1';
           } else {
             scoresByTeam[currentTeamName].position = '1';
@@ -286,8 +286,8 @@ exports.getLeaderboardData = (req, res) => {
             // Current Team is tied with the previous Team in the sorted array
             scoresByTeam[currentTeamName].position = scoresByTeam[previousTeamName].position;
           } else if (
-            sortedLeaderboardArray[i + 1]
-            && scoresByTeam[sortedLeaderboardArray[i + 1][0].team_name].score === currentTeamScore) {
+            nextTeamName
+            && scoresByTeam[nextTeamName].score === currentTeamScore) {
             // Current Team is tied with the next Team in the sorted array
             scoresByTeam[currentTeamName].position = `T${i + 1}`;
           } else {
