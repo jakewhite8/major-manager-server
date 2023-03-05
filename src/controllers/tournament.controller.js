@@ -322,7 +322,6 @@ exports.getTournamentTeamNames = (req, res) => {
 };
 
 // Return an array of Teams with the Tournaments they have won
-// as well as an object with the number of wins each Team has
 exports.getLeagueLeaderboard = (req, res) => {
   Tournament.getLeagueLeaderboard(req, (err, data) => {
     if (err) {
@@ -346,7 +345,6 @@ exports.getLeagueLeaderboard = (req, res) => {
     // x interates through data
     // i iterates through teamArray
     const teamArray = [];
-    const tournamentWinCount = {};
     for (let x = 0, i = 0; x < data.length; x += 1) {
       if (x === 0) {
         teamArray.push({
@@ -354,11 +352,9 @@ exports.getLeagueLeaderboard = (req, res) => {
           team_name: data[x].team_name,
           tournaments: [{ id: data[x].tournamentId, name: data[x].name }],
         });
-        tournamentWinCount[data[x].team_name] = 1;
       } else if (data[x].userId === teamArray[i].userId) {
         // Team has already been created
         teamArray[i].tournaments.push({ id: data[x].tournamentId, name: data[x].name });
-        tournamentWinCount[data[x].team_name] += 1;
       } else {
         // New Team
         teamArray.push({
@@ -366,7 +362,6 @@ exports.getLeagueLeaderboard = (req, res) => {
           team_name: data[x].team_name,
           tournaments: [{ id: data[x].tournamentId, name: data[x].name }],
         });
-        tournamentWinCount[data[x].team_name] = 1;
         i += 1;
       }
     }
@@ -374,6 +369,6 @@ exports.getLeagueLeaderboard = (req, res) => {
     // Order the teamArray array by how many Tournaments a Team has won
     teamArray.sort((a, b) => b.tournaments.length - a.tournaments.length);
 
-    res.send({ teamArray, tournamentWinCount });
+    res.send({ teamArray });
   });
 };
