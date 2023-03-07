@@ -140,11 +140,11 @@ exports.tournamentPlayerData = (req, res) => {
           });
           return;
         }
-        // Array that holds the id's of Players currently on the logged in User's team
-        const selectedTeam = [];
+        // Object that holds the id's of Players currently on the logged in User's team
+        const selectedTeam = {};
         if (getTeamData) {
           for (let j = 0; j < getTeamData.length; j += 1) {
-            selectedTeam.push(getTeamData[j].playerId);
+            selectedTeam[getTeamData[j].playerId] = true;
           }
         }
 
@@ -152,6 +152,27 @@ exports.tournamentPlayerData = (req, res) => {
         const playerDataByTier = {};
         // Create an object that contains which players are
         // selected based on what tier they are in
+        // playerDataByTier = {
+        //   "tier-1": [
+        //     {
+        //       "player_id": 261,
+        //       "tier": 1,
+        //       "score": 12,
+        //       "first_name": "Collin",
+        //       "last_name": "Morikawa"
+        //     },
+        //     {
+        //       "player_id": 991,
+        //       "tier": 1,
+        //       "score": -3,
+        //       "first_name": "Justin",
+        //       "last_name": "Thomas"
+        //     },...
+        //   ],
+        //   "tier-2": [...],
+        //   "tier-3": [...],
+        //   ...
+        // }
         const selectedPlayers = {};
         for (let i = 0; i < playerData.length; i += 1) {
           const player = playerData[i];
@@ -159,7 +180,10 @@ exports.tournamentPlayerData = (req, res) => {
             playerDataByTier[`tier-${player.tier}`] = [];
             selectedPlayers[`tier-${player.tier}`] = null;
           }
-          if (selectedTeam && selectedTeam.indexOf(player.player_id) > -1) {
+          // Add to selectedPlayers object if applicable 
+          // Do not check selectedTeam if selectedPlayers has already been set
+          if (!selectedPlayers[`tier-${player.tier}`] 
+            && selectedTeam && selectedTeam[player.player_id]) {
             selectedPlayers[`tier-${player.tier}`] = player.player_id;
           }
           playerDataByTier[`tier-${player.tier}`].push(player);
