@@ -140,7 +140,7 @@ exports.tournamentPlayerData = (req, res) => {
           });
           return;
         }
-
+        // Array that holds the id's of Players currently on the logged in User's team
         const selectedTeam = [];
         if (getTeamData) {
           for (let j = 0; j < getTeamData.length; j += 1) {
