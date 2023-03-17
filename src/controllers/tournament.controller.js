@@ -106,7 +106,7 @@ exports.setTeam = (req, res) => {
     (err, data) => {
       if (err) {
         res.send({
-          message: 'Error finding active tournaments',
+          message: 'Error updating team',
         });
         return;
       }
