@@ -180,9 +180,9 @@ exports.tournamentPlayerData = (req, res) => {
             playerDataByTier[`tier-${player.tier}`] = [];
             selectedPlayers[`tier-${player.tier}`] = null;
           }
-          // Add to selectedPlayers object if applicable 
+          // Add to selectedPlayers object if applicable
           // Do not check selectedTeam if selectedPlayers has already been set
-          if (!selectedPlayers[`tier-${player.tier}`] 
+          if (!selectedPlayers[`tier-${player.tier}`]
             && selectedTeam && selectedTeam[player.player_id]) {
             selectedPlayers[`tier-${player.tier}`] = player.player_id;
           }
@@ -294,8 +294,8 @@ exports.getLeaderboardData = (req, res) => {
       for (let i = 0; i < sortedLeaderboardArray.length; i += 1) {
         const currentTeamName = sortedLeaderboardArray[i][0].team_name;
         const currentTeamScore = scoresByTeam[currentTeamName].score;
-        const nextTeamName = sortedLeaderboardArray[i + 1] ?
-            sortedLeaderboardArray[i + 1][0].team_name : false;
+        const nextTeamName = sortedLeaderboardArray[i + 1]
+          ? sortedLeaderboardArray[i + 1][0].team_name : false;
         // The first Team in the array is either in first place or is tied for first
         if (i === 0) {
           if (nextTeamName && scoresByTeam[nextTeamName].score === currentTeamScore) {
