@@ -288,8 +288,6 @@ exports.getLeaderboardData = (req, res) => {
       }
       sortedLeaderboardArray
         .sort((a, b) => scoresByTeam[a[0].team_name].score - scoresByTeam[b[0].team_name].score);
-      console.log('sortedLeaderboardArray');
-      console.log(sortedLeaderboardArray);
       // Calculate each Team's position in the Tournament
       for (let i = 0; i < sortedLeaderboardArray.length; i += 1) {
         const currentTeamName = sortedLeaderboardArray[i][0].team_name;
