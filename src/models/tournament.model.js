@@ -167,8 +167,8 @@ module.exports = (connection) => {
     // First check if the tournament has started.
     // If it has, then a User should not be able to update their Team
     connection.query('SELECT start_date FROM tournaments WHERE id = ?;', [tournamentId], (dateCheckErr, dateCheckRes) => {
-      let currentDate = new Date().getTime()
-      let tournamentStartDate = new Date(dateCheckRes[0].start_date).getTime()
+      const currentDate = new Date().getTime()
+      const tournamentStartDate = new Date(dateCheckRes[0].start_date).getTime()
       if (currentDate < tournamentStartDate) {
         // Check if this relation has been established
         connection.query('SELECT id FROM users_tournaments WHERE tournamentId = ? AND userId= ?', [tournamentId, userId], (err, res) => {
