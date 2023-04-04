@@ -105,7 +105,7 @@ exports.setTeam = (req, res) => {
   Tournament.createTeam(req.userId, req.body.tournamentId, req.body.selectedPlayers,
     (err, data) => {
       if (err) {
-        res.send({
+        res.status(500).send({
           message: err.message ? err.message : 'Error updating team'
         });
         return;
