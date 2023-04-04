@@ -167,6 +167,7 @@ module.exports = (connection) => {
     // First check if the tournament has started.
     // If it has, then a User should not be able to update their Team
     connection.query('SELECT start_date FROM tournaments WHERE id = ?;', [tournamentId], (dateCheckErr, dateCheckRes) => {
+      // Do not update Team if the Tournament has already started
       const currentDate = new Date().getTime()
       const tournamentStartDate = new Date(dateCheckRes[0].start_date).getTime()
       if (currentDate < tournamentStartDate) {
@@ -212,7 +213,6 @@ module.exports = (connection) => {
                   handleError(insertPlayersErr, result);
                   return;
                 }
-
                 result(null, insertPlayersRes);
               });
             });
@@ -237,7 +237,7 @@ module.exports = (connection) => {
           }
         });
       } else {
-        result(true, null)
+        result({message: 'Error: Tournament already started'}, null)
       }
     })
   };
