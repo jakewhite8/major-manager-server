@@ -31,6 +31,29 @@ exports.signup = (req, res) => {
   });
 };
 
+exports.setPassword = (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      message: 'Content can not be empty',
+    });
+  }
+
+  const user = new User({
+    team_name: null,
+    email: req.body.email,
+    password: bcrypt.hashSync(req.body.password, 8),
+  });
+
+  User.changePassword(user, (err, data) => {
+    if (err) {
+      res.status(500).send({
+        message: err.message || 'Error occured while updating password',
+      });
+    }
+    res.send(data);
+  });
+};
+
 exports.signin = (req, res) => {
   User.findOne(req.body.email, (err, data) => {
     if (err) {
