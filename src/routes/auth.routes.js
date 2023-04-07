@@ -22,7 +22,7 @@ module.exports = (app) => {
 
   app.post(
     '/api/auth/set_password',
-    [authJwt.verifyToken, authJwt.isAdmin],
+    [verifySignUp.checkValidEmail, authJwt.verifyToken, authJwt.isAdmin],
     controller.setPassword
   );
 
