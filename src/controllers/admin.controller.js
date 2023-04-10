@@ -22,8 +22,7 @@ exports.uploadPlayerScores = (req, res) => {
     //   },
     //   ...
     // ]
-
-    Admin.addPlayersToTournamentTable(addPlayersData, req.params.id,
+    Admin.addPlayersToTournamentTable(addPlayersData, req.params.id, req.body.round,
       (addTournamentErr, addTournamentData) => {
         if (addTournamentErr) {
           res.send({

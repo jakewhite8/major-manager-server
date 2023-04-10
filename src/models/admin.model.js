@@ -120,7 +120,7 @@ module.exports = (connection) => {
     });
   };
 
-  Admin.addPlayersToTournamentTable = (playerTournamentData, tournamentId, result) => {
+  Admin.addPlayersToTournamentTable = (playerTournamentData, tournamentId, tournamentRound, result) => {
     // Find out what players need to be added to tournament table
     const playerIds = [];
     for (let i = 0; i < playerTournamentData.length; i += 1) {
@@ -214,8 +214,14 @@ module.exports = (connection) => {
             handleError(updateTournamentErr, result);
             return;
           }
-
-          result(null, updateTournamentRes);
+          //Update Tournament's round value
+          connection.query(`UPDATE tournaments SET round = ${tournamentRound} WHERE id = ${tournamentId}`, (updateTournamentRoundErr, updateTournamentRoundRes) => {
+            if (updateTournamentRoundErr) {
+              handleError(updateTournamentRoundErr, result);
+              return;
+            }
+            result(null, updateTournamentRes);
+          })
         });
       }
     });
