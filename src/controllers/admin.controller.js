@@ -25,7 +25,7 @@ exports.uploadPlayerScores = (req, res) => {
     Admin.addPlayersToTournamentTable(addPlayersData, req.params.id, req.body.round,
       (addTournamentErr, addTournamentData) => {
         if (addTournamentErr) {
-          res.send({
+          res.status(500).send({
             message: 'Error uploading players to tournament table',
           });
           return;

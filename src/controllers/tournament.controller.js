@@ -32,7 +32,7 @@ exports.createTournament = (req, res) => {
 exports.activeTournamentsPage = (req, res) => {
   Tournament.findActive((err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding active tournaments',
       });
       return;
@@ -44,7 +44,7 @@ exports.activeTournamentsPage = (req, res) => {
 exports.concludedTournaments = (req, res) => {
   Tournament.concludedTournaments((err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding tournaments that have ended',
       });
       return;
@@ -56,7 +56,7 @@ exports.concludedTournaments = (req, res) => {
 exports.joinTournamentsPage = (req, res) => {
   Tournament.findUpcoming((err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding upcoming tournaments',
       });
       return;
@@ -68,7 +68,7 @@ exports.joinTournamentsPage = (req, res) => {
 exports.activeTournamentUserData = (req, res) => {
   Tournament.findActiveTournamentUser(req.userId, (err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding a user\'s active tournaments',
       });
       return;
@@ -92,7 +92,7 @@ exports.activeTournamentUserData = (req, res) => {
 exports.pastTournamentUserData = (req, res) => {
   Tournament.findPastTournamentUser(req.userId, (err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding a user\'s past tournaments',
       });
       return;
@@ -118,7 +118,7 @@ exports.tournamentPlayerData = (req, res) => {
   // Get Players in a given Tournament
   Player.getTournamentPlayerData(req.params.id, (playerErr, playerData) => {
     if (playerErr) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding a tournaments player data',
       });
       return;
@@ -126,7 +126,7 @@ exports.tournamentPlayerData = (req, res) => {
 
     Tournament.getTournamentInfoFromId(req.params.id, (tournamentInfoErr, tournamentInfoData) => {
       if (tournamentInfoErr) {
-        res.send({
+        res.status(500).send({
           message: 'Error getting tournament name',
         });
         return;
@@ -135,7 +135,7 @@ exports.tournamentPlayerData = (req, res) => {
       // Get a User's team, if they have one
       User.getTeam(req.userId, req.params.id, (getTeamErr, getTeamData) => {
         if (getTeamErr) {
-          res.send({
+          res.status(500).send({
             message: 'Error getting users team',
           });
           return;
@@ -204,7 +204,7 @@ exports.getLeaderboardData = (req, res) => {
   // Need to get the Players on all of the Teams that are signed up for a particular Tournament
   Tournament.getLeaderboardData(req.params.id, (userErr, userData) => {
     if (userErr) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding users in a tournament',
       });
       return;
@@ -212,7 +212,7 @@ exports.getLeaderboardData = (req, res) => {
 
     Tournament.getTournamentInfoFromId(req.params.id, (tournamentInfoErr, tournamentInfoData) => {
       if (tournamentInfoErr) {
-        res.send({
+        res.status(500).send({
           message: 'Error finding tournament name',
         });
         return;
@@ -334,7 +334,7 @@ exports.getLeaderboardData = (req, res) => {
 exports.getTournamentTeamNames = (req, res) => {
   Tournament.getTournamentTeamNames(req.params.id, (err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: (err && err.message) || 'Error finding teams in a tournament',
       });
       return;
@@ -347,7 +347,7 @@ exports.getTournamentTeamNames = (req, res) => {
 exports.getLeagueLeaderboard = (req, res) => {
   Tournament.getLeagueLeaderboard(req, (err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: (err && err.message) || 'Error retrieving League Leaderboard Data',
       });
       return;

@@ -78,7 +78,7 @@ exports.signin = (req, res) => {
     User.findRoles(data.id, (roleErr, roleData) => {
       if (roleErr) {
         console.error('Error getting user\'s roles: ', roleErr);
-        res.status(500);
+        res.status(500).send({message: 'Error getting user\'s roles'});
         return;
       }
 
