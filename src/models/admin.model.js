@@ -53,8 +53,8 @@ module.exports = (connection) => {
       const newPlayers = [];
       for (let i = 0; i < playerData.length; i += 1) {
         let addToInsertList = true;
+        const playerDataLastName = playerData[i].last_name.toLowerCase();
         for (let j = 0; j < selectPlayersRes.length; j += 1) {
-          const playerDataLastName = playerData[i].last_name.toLowerCase();
           const selectPlayersResLastName = selectPlayersRes[j].last_name.toLowerCase();
           if (playerDataLastName === selectPlayersResLastName) {
             // Only one player with this last name is playing in the tournament,
