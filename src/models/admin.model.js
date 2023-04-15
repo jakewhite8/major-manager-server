@@ -43,54 +43,53 @@ module.exports = (connection) => {
       );
 
       // Make an object that merges existing players with their ids
-      // and makes an array of players that need to be added to the database
+      // and make an array of players that need to be added to the database
+
+      // Put all Players in database into existingPlayersObject
+      let existingPlayersObject = {};
+      for (let k = 0; k < selectPlayersRes.length; k += 1) {
+        let existingPlayer = selectPlayersRes[k];
+        let playerProperty = `${existingPlayer.last_name.toLowerCase()} ${existingPlayer.first_name.toLowerCase()}`;
+        existingPlayersObject[playerProperty] = {};
+        existingPlayersObject[playerProperty].id = existingPlayer.id;
+        existingPlayersObject[playerProperty].first_name = existingPlayer.first_name;
+        existingPlayersObject[playerProperty].last_name = existingPlayer.last_name;
+      }
+
+      // Iterate through Players being uploaded. Find their ID and tier information if
+      // available from database. Otherwise add them to the newPlayers array to be added to the
+      // database
 
       // Array of Players already in the database with their scores, id, name info
-      const existingPlayersAndIds = [];
+      let existingPlayersAndIds = [];
       // Array that will be used for the SQL INSERT of new Players
-      const sqlQueryValues = [];
+      let sqlQueryValues = [];
       // Array of new Players that will contain Player id, score, name
-      const newPlayers = [];
-      for (let i = 0; i < playerData.length; i += 1) {
-        let addToInsertList = true;
-        const playerDataLastName = playerData[i].last_name.toLowerCase();
-        for (let j = 0; j < selectPlayersRes.length; j += 1) {
-          const selectPlayersResLastName = selectPlayersRes[j].last_name.toLowerCase();
-          if (playerDataLastName === selectPlayersResLastName) {
-            // Only one player with this last name is playing in the tournament,
-            // add to the existing array OR
-            // If the first_name property is present, there are two players
-            // in the tournament with the same last name
-            // Need to make sure first intials are the same
-            if (!playerData[i].first_name
-              || (playerData[i].first_name
-              && (playerData[i].first_name.charAt(0).toLowerCase()
-                === selectPlayersRes[j].first_name.charAt(0).toLowerCase()))) {
-              existingPlayersAndIds.push({
-                id: selectPlayersRes[j].id,
-                first_name: selectPlayersRes[j].first_name,
-                last_name: selectPlayersRes[j].last_name,
-                score: playerData[i].score,
-                tier: playerData[i].tier || '',
-                cut: playerData[i].position === 'CUT',
-              });
-              addToInsertList = false;
-              break;
-            }
-          }
-        }
-
-        if (addToInsertList) {
+      let newPlayers = [];
+      for (let index = 0; index < playerData.length; index += 1) {
+        let playerProperty = `${playerData[index].last_name.toLowerCase()} ${playerData[index].first_name.toLowerCase()}`
+        if (existingPlayersObject[playerProperty]) {
+          // Player exists in database
+          let playerDatabaseInfo = existingPlayersObject[playerProperty]
+          existingPlayersAndIds.push({
+            id: playerDatabaseInfo.id,
+            first_name: playerDatabaseInfo.first_name,
+            last_name: playerDatabaseInfo.last_name,
+            score: playerData[index].score,
+            tier: playerData[index].tier || '',
+            cut: playerData[index].position === 'CUT',
+          });
+        } else {
           // Player doesnt exist in database
           sqlQueryValues.push([
-            `'${(playerData[i].first_name && capitalizeFirstInitalAndEncode(playerData[i].first_name)) || ''}'`,
-            `'${capitalizeFirstInitalAndEncode(playerData[i].last_name)}'`,
+            `'${(playerData[index].first_name && capitalizeFirstInitalAndEncode(playerData[index].first_name)) || ''}'`,
+            `'${capitalizeFirstInitalAndEncode(playerData[index].last_name)}'`,
           ]);
           newPlayers.push({
-            first_name: playerData[i].first_name || '',
-            last_name: playerData[i].last_name,
-            score: playerData[i].score,
-            tier: playerData[i].tier || '',
+            first_name: playerData[index].first_name || '',
+            last_name: playerData[index].last_name,
+            score: playerData[index].score,
+            tier: playerData[index].tier || '',
           });
         }
       }
