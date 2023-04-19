@@ -106,7 +106,7 @@ exports.setTeam = (req, res) => {
     (err, data) => {
       if (err) {
         res.status(500).send({
-          message: err.message ? err.message : 'Error updating team'
+          message: err.message ? err.message : 'Error updating team',
         });
         return;
       }

@@ -32,7 +32,7 @@ module.exports = (connection) => {
   };
 
   User.changePassword = (user, result) => {
-    console.log(`Changed ${user.email}'s password`)
+    console.log(`Changed ${user.email}'s password`);
     connection.query(`UPDATE users SET password = '${user.password}' WHERE email = '${user.email}'`, (err, res) => {
       if (err) {
         handleError(err, result);

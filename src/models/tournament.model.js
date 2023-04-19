@@ -168,8 +168,8 @@ module.exports = (connection) => {
     // If it has, then a User should not be able to update their Team
     connection.query('SELECT start_date FROM tournaments WHERE id = ?;', [tournamentId], (dateCheckErr, dateCheckRes) => {
       // Do not update Team if the Tournament has already started
-      const currentDate = new Date().getTime()
-      const tournamentStartDate = new Date(dateCheckRes[0].start_date).getTime()
+      const currentDate = new Date().getTime();
+      const tournamentStartDate = new Date(dateCheckRes[0].start_date).getTime();
       if (currentDate < tournamentStartDate) {
         // Check if this relation has been established
         connection.query('SELECT id FROM users_tournaments WHERE tournamentId = ? AND userId= ?', [tournamentId, userId], (err, res) => {
@@ -206,7 +206,9 @@ module.exports = (connection) => {
                 return;
               }
 
-              const sqlInsertStringHelper = createSqlValuesString(userTournamentRelationId, playerIds);
+              const sqlInsertStringHelper = createSqlValuesString(
+                userTournamentRelationId, playerIds,
+              );
               // Insert new team for a particular tournament
               connection.query(`INSERT INTO user_tournament_players(userTournamentRelationId, playerId) VALUES(${sqlInsertStringHelper})`, (insertPlayersErr, insertPlayersRes) => {
                 if (insertPlayersErr) {
@@ -237,9 +239,9 @@ module.exports = (connection) => {
           }
         });
       } else {
-        result({message: 'Error: Tournament already started'}, null)
+        result({ message: 'Error: Tournament already started' }, null);
       }
-    })
+    });
   };
 
   Tournament.getLeaderboardData = (tournamentId, result) => {
