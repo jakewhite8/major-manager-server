@@ -32,7 +32,7 @@ exports.createTournament = (req, res) => {
 exports.activeTournamentsPage = (req, res) => {
   Tournament.findActive((err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding active tournaments',
       });
       return;
@@ -44,7 +44,7 @@ exports.activeTournamentsPage = (req, res) => {
 exports.concludedTournaments = (req, res) => {
   Tournament.concludedTournaments((err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding tournaments that have ended',
       });
       return;
@@ -56,7 +56,7 @@ exports.concludedTournaments = (req, res) => {
 exports.joinTournamentsPage = (req, res) => {
   Tournament.findUpcoming((err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding upcoming tournaments',
       });
       return;
@@ -68,7 +68,7 @@ exports.joinTournamentsPage = (req, res) => {
 exports.activeTournamentUserData = (req, res) => {
   Tournament.findActiveTournamentUser(req.userId, (err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding a user\'s active tournaments',
       });
       return;
@@ -92,7 +92,7 @@ exports.activeTournamentUserData = (req, res) => {
 exports.pastTournamentUserData = (req, res) => {
   Tournament.findPastTournamentUser(req.userId, (err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding a user\'s past tournaments',
       });
       return;
@@ -105,8 +105,8 @@ exports.setTeam = (req, res) => {
   Tournament.createTeam(req.userId, req.body.tournamentId, req.body.selectedPlayers,
     (err, data) => {
       if (err) {
-        res.send({
-          message: 'Error finding active tournaments',
+        res.status(500).send({
+          message: err.message ? err.message : 'Error updating team',
         });
         return;
       }
@@ -118,7 +118,7 @@ exports.tournamentPlayerData = (req, res) => {
   // Get Players in a given Tournament
   Player.getTournamentPlayerData(req.params.id, (playerErr, playerData) => {
     if (playerErr) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding a tournaments player data',
       });
       return;
@@ -126,7 +126,7 @@ exports.tournamentPlayerData = (req, res) => {
 
     Tournament.getTournamentInfoFromId(req.params.id, (tournamentInfoErr, tournamentInfoData) => {
       if (tournamentInfoErr) {
-        res.send({
+        res.status(500).send({
           message: 'Error getting tournament name',
         });
         return;
@@ -135,16 +135,16 @@ exports.tournamentPlayerData = (req, res) => {
       // Get a User's team, if they have one
       User.getTeam(req.userId, req.params.id, (getTeamErr, getTeamData) => {
         if (getTeamErr) {
-          res.send({
+          res.status(500).send({
             message: 'Error getting users team',
           });
           return;
         }
-
-        const selectedTeam = [];
+        // Object that holds the id's of Players currently on the logged in User's team
+        const selectedTeam = {};
         if (getTeamData) {
           for (let j = 0; j < getTeamData.length; j += 1) {
-            selectedTeam.push(getTeamData[j].playerId);
+            selectedTeam[getTeamData[j].playerId] = true;
           }
         }
 
@@ -152,6 +152,27 @@ exports.tournamentPlayerData = (req, res) => {
         const playerDataByTier = {};
         // Create an object that contains which players are
         // selected based on what tier they are in
+        // playerDataByTier = {
+        //   "tier-1": [
+        //     {
+        //       "player_id": 261,
+        //       "tier": 1,
+        //       "score": 12,
+        //       "first_name": "Collin",
+        //       "last_name": "Morikawa"
+        //     },
+        //     {
+        //       "player_id": 991,
+        //       "tier": 1,
+        //       "score": -3,
+        //       "first_name": "Justin",
+        //       "last_name": "Thomas"
+        //     },...
+        //   ],
+        //   "tier-2": [...],
+        //   "tier-3": [...],
+        //   ...
+        // }
         const selectedPlayers = {};
         for (let i = 0; i < playerData.length; i += 1) {
           const player = playerData[i];
@@ -159,7 +180,10 @@ exports.tournamentPlayerData = (req, res) => {
             playerDataByTier[`tier-${player.tier}`] = [];
             selectedPlayers[`tier-${player.tier}`] = null;
           }
-          if (selectedTeam && selectedTeam.indexOf(player.player_id) > -1) {
+          // Add to selectedPlayers object if applicable
+          // Do not check selectedTeam if selectedPlayers has already been set
+          if (!selectedPlayers[`tier-${player.tier}`]
+            && selectedTeam && selectedTeam[player.player_id]) {
             selectedPlayers[`tier-${player.tier}`] = player.player_id;
           }
           playerDataByTier[`tier-${player.tier}`].push(player);
@@ -180,7 +204,7 @@ exports.getLeaderboardData = (req, res) => {
   // Need to get the Players on all of the Teams that are signed up for a particular Tournament
   Tournament.getLeaderboardData(req.params.id, (userErr, userData) => {
     if (userErr) {
-      res.send({
+      res.status(500).send({
         message: 'Error finding users in a tournament',
       });
       return;
@@ -188,7 +212,7 @@ exports.getLeaderboardData = (req, res) => {
 
     Tournament.getTournamentInfoFromId(req.params.id, (tournamentInfoErr, tournamentInfoData) => {
       if (tournamentInfoErr) {
-        res.send({
+        res.status(500).send({
           message: 'Error finding tournament name',
         });
         return;
@@ -229,7 +253,9 @@ exports.getLeaderboardData = (req, res) => {
 
       // Iterate through the topScoresByTeam object to get a total score for each team
       const scoresByTeam = {};
-      for (const team in topScoresByTeam) {
+      const topScoresByTeamKeys = Object.keys(topScoresByTeam);
+      for (let index = 0; index < topScoresByTeamKeys.length; index += 1) {
+        const team = topScoresByTeamKeys[index];
         for (let j = 0; j < topScoresByTeam[team].length; j += 1) {
           if (!scoresByTeam[team]) {
             scoresByTeam[team] = {
@@ -241,9 +267,10 @@ exports.getLeaderboardData = (req, res) => {
         }
       }
 
-      // Add a 'selected' property for each player where a team uses their score
-      // towards their total score
-      for (const team in leaderboard) {
+      // Add a 'selected' property to each player that a team uses for their total score
+      const teams = Object.keys(leaderboard);
+      for (let i = 0; i < teams.length; i += 1) {
+        const team = teams[i];
         const arrayOfTopScoreIds = topScoresByTeam[team].map((player) => player.playerId);
         for (let k = 0; k < leaderboard[team].length; k += 1) {
           const selectedPlayer = leaderboard[team][k];
@@ -255,20 +282,21 @@ exports.getLeaderboardData = (req, res) => {
 
       // Sort Leaderboard into an Array based off their calculated score
       const sortedLeaderboardArray = [];
-      for (const team in leaderboard) {
+      for (let i = 0; i < teams.length; i += 1) {
+        const team = teams[i];
         sortedLeaderboardArray.push(leaderboard[team]);
       }
-      sortedLeaderboardArray.sort((a, b) => scoresByTeam[a[0].team_name].score - scoresByTeam[b[0].team_name].score);
-
+      sortedLeaderboardArray
+        .sort((a, b) => scoresByTeam[a[0].team_name].score - scoresByTeam[b[0].team_name].score);
       // Calculate each Team's position in the Tournament
       for (let i = 0; i < sortedLeaderboardArray.length; i += 1) {
         const currentTeamName = sortedLeaderboardArray[i][0].team_name;
         const currentTeamScore = scoresByTeam[currentTeamName].score;
+        const nextTeamName = sortedLeaderboardArray[i + 1]
+          ? sortedLeaderboardArray[i + 1][0].team_name : false;
         // The first Team in the array is either in first place or is tied for first
         if (i === 0) {
-          if (
-            sortedLeaderboardArray[i + 1]
-            && scoresByTeam[sortedLeaderboardArray[i + 1][0].team_name].score == currentTeamScore) {
+          if (nextTeamName && scoresByTeam[nextTeamName].score === currentTeamScore) {
             scoresByTeam[currentTeamName].position = 'T1';
           } else {
             scoresByTeam[currentTeamName].position = '1';
@@ -276,12 +304,12 @@ exports.getLeaderboardData = (req, res) => {
         } else {
           // Check if the current Team's score is the same as the one before it in the sorted array
           const previousTeamName = sortedLeaderboardArray[i - 1][0].team_name;
-          if (scoresByTeam[previousTeamName].score == currentTeamScore) {
+          if (scoresByTeam[previousTeamName].score === currentTeamScore) {
             // Current Team is tied with the previous Team in the sorted array
             scoresByTeam[currentTeamName].position = scoresByTeam[previousTeamName].position;
           } else if (
-            sortedLeaderboardArray[i + 1]
-            && scoresByTeam[sortedLeaderboardArray[i + 1][0].team_name].score == currentTeamScore) {
+            nextTeamName
+            && scoresByTeam[nextTeamName].score === currentTeamScore) {
             // Current Team is tied with the next Team in the sorted array
             scoresByTeam[currentTeamName].position = `T${i + 1}`;
           } else {
@@ -306,7 +334,7 @@ exports.getLeaderboardData = (req, res) => {
 exports.getTournamentTeamNames = (req, res) => {
   Tournament.getTournamentTeamNames(req.params.id, (err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: (err && err.message) || 'Error finding teams in a tournament',
       });
       return;
@@ -316,11 +344,10 @@ exports.getTournamentTeamNames = (req, res) => {
 };
 
 // Return an array of Teams with the Tournaments they have won
-// as well as an object with the number of wins each Team has
 exports.getLeagueLeaderboard = (req, res) => {
   Tournament.getLeagueLeaderboard(req, (err, data) => {
     if (err) {
-      res.send({
+      res.status(500).send({
         message: (err && err.message) || 'Error retrieving League Leaderboard Data',
       });
       return;
@@ -340,19 +367,16 @@ exports.getLeagueLeaderboard = (req, res) => {
     // x interates through data
     // i iterates through teamArray
     const teamArray = [];
-    const tournamentWinCount = {};
     for (let x = 0, i = 0; x < data.length; x += 1) {
-      if (x == 0) {
+      if (x === 0) {
         teamArray.push({
           userId: data[x].userId,
           team_name: data[x].team_name,
           tournaments: [{ id: data[x].tournamentId, name: data[x].name }],
         });
-        tournamentWinCount[data[x].team_name] = 1;
-      } else if (data[x].userId == teamArray[i].userId) {
+      } else if (data[x].userId === teamArray[i].userId) {
         // Team has already been created
         teamArray[i].tournaments.push({ id: data[x].tournamentId, name: data[x].name });
-        tournamentWinCount[data[x].team_name] += 1;
       } else {
         // New Team
         teamArray.push({
@@ -360,7 +384,6 @@ exports.getLeagueLeaderboard = (req, res) => {
           team_name: data[x].team_name,
           tournaments: [{ id: data[x].tournamentId, name: data[x].name }],
         });
-        tournamentWinCount[data[x].team_name] = 1;
         i += 1;
       }
     }
@@ -368,6 +391,6 @@ exports.getLeagueLeaderboard = (req, res) => {
     // Order the teamArray array by how many Tournaments a Team has won
     teamArray.sort((a, b) => b.tournaments.length - a.tournaments.length);
 
-    res.send({ teamArray, tournamentWinCount });
+    res.send({ teamArray });
   });
 };

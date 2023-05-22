@@ -31,7 +31,7 @@ exports.updateUser = (req, res) => {
   };
   User.updateUser(user, (updateUserErr) => {
     if (updateUserErr) {
-      res.send({
+      res.status(500).send({
         message: 'Error updating user',
       });
     }
@@ -52,7 +52,7 @@ exports.addWinningTeam = (req, res) => {
     tournamentId: req.body.tournamentId,
   }, (updateUserWinsErr, updateUserWinsRes) => {
     if (updateUserWinsErr) {
-      res.send({
+      res.status(500).send({
         message: 'Error updating a users wins',
       });
     }
