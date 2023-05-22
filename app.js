@@ -6,9 +6,18 @@ const cors = require('cors');
 
 const app = express();
 
-const corsOptions = {
-  origin: 'http://www.highstakesgolfpools.com',
-};
+let whitelist = ['https://www.highstakesgolfpools.com', 'https://highstakesgolfpools.com'];
+
+let corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+
 app.use(cors(corsOptions));
 
 // Enables incoming requests to be decoded and parsed as json objects
