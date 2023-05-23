@@ -32,14 +32,18 @@ module.exports = (connection) => {
   };
 
   User.changePassword = (user, result) => {
-    console.log(`Changed ${user.email}'s password`);
-    connection.query(`UPDATE users SET password = '${user.password}' WHERE email = '${user.email}'`, (err, res) => {
-      if (err) {
-        handleError(err, result);
-        return;
-      }
-      result(null, res);
-    });
+    // This may be vulnerable to cyber attack
+    if (user.email !== '*') {
+      connection.query(`UPDATE users SET password = '${user.password}' WHERE email = '${user.email}'`, (err, res) => {
+        if (err) {
+          handleError(err, result);
+          return;
+        }
+        result(null, res);
+      });
+    } else {
+      handleError('Do not do', result)
+    }
   };
 
   User.findOne = (email, result) => {
