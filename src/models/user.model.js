@@ -42,7 +42,7 @@ module.exports = (connection) => {
         result(null, res);
       });
     } else {
-      handleError('Do not do', result)
+      handleError('Do not do', result);
     }
   };
 

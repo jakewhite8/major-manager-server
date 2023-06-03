@@ -46,10 +46,10 @@ module.exports = (connection) => {
       // and make an array of players that need to be added to the database
 
       // Put all Players in database into existingPlayersObject
-      let existingPlayersObject = {};
+      const existingPlayersObject = {};
       for (let k = 0; k < selectPlayersRes.length; k += 1) {
-        let existingPlayer = selectPlayersRes[k];
-        let playerProperty = `${existingPlayer.last_name.toLowerCase()} ${existingPlayer.first_name.toLowerCase()}`;
+        const existingPlayer = selectPlayersRes[k];
+        const playerProperty = `${existingPlayer.last_name.toLowerCase()} ${existingPlayer.first_name.toLowerCase()}`;
         existingPlayersObject[playerProperty] = {};
         existingPlayersObject[playerProperty].id = existingPlayer.id;
         existingPlayersObject[playerProperty].first_name = existingPlayer.first_name;
@@ -61,16 +61,16 @@ module.exports = (connection) => {
       // database
 
       // Array of Players already in the database with their scores, id, name info
-      let existingPlayersAndIds = [];
+      const existingPlayersAndIds = [];
       // Array that will be used for the SQL INSERT of new Players
-      let sqlQueryValues = [];
+      const sqlQueryValues = [];
       // Array of new Players that will contain Player id, score, name
-      let newPlayers = [];
+      const newPlayers = [];
       for (let index = 0; index < playerData.length; index += 1) {
-        let playerProperty = `${playerData[index].last_name.toLowerCase()} ${playerData[index].first_name.toLowerCase()}`
+        const playerProperty = `${playerData[index].last_name.toLowerCase()} ${playerData[index].first_name.toLowerCase()}`;
         if (existingPlayersObject[playerProperty]) {
           // Player exists in database
-          let playerDatabaseInfo = existingPlayersObject[playerProperty]
+          const playerDatabaseInfo = existingPlayersObject[playerProperty];
           existingPlayersAndIds.push({
             id: playerDatabaseInfo.id,
             first_name: playerDatabaseInfo.first_name,
@@ -119,7 +119,9 @@ module.exports = (connection) => {
     });
   };
 
-  Admin.addPlayersToTournamentTable = (playerTournamentData, tournamentId, tournamentRound, result) => {
+  Admin.addPlayersToTournamentTable = (
+    playerTournamentData, tournamentId, tournamentRound, result,
+  ) => {
     // Find out what players need to be added to tournament table
     const playerIds = [];
     for (let i = 0; i < playerTournamentData.length; i += 1) {
@@ -213,14 +215,14 @@ module.exports = (connection) => {
             handleError(updateTournamentErr, result);
             return;
           }
-          //Update Tournament's round value
-          connection.query(`UPDATE tournaments SET round = ${tournamentRound} WHERE id = ${tournamentId}`, (updateTournamentRoundErr, updateTournamentRoundRes) => {
+          // Update Tournament's round value
+          connection.query(`UPDATE tournaments SET round = ${tournamentRound} WHERE id = ${tournamentId}`, (updateTournamentRoundErr) => {
             if (updateTournamentRoundErr) {
               handleError(updateTournamentRoundErr, result);
               return;
             }
             result(null, updateTournamentRes);
-          })
+          });
         });
       }
     });
