@@ -36,8 +36,7 @@ module.exports = function (app) {
   );
 
   app.get(
-    '/api/v1/past_tournament_user_data',
-    [authJwt.verifyToken],
+    '/api/v1/past_tournament_user_data/:id',
     controller.pastTournamentUserData,
   );
 

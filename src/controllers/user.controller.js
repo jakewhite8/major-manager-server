@@ -10,6 +10,18 @@ exports.userPage = (req, res) => {
   res.status(200).send('User Content');
 };
 
+exports.userInfo = (req, res) => {
+  if (!req.params.id) {
+    res.status(400).send('User ID required')
+  }
+  User.getUserInformation(req.params.id, (userError, userResponse) => {
+    if (userError) {
+      res.status(500).send(userError)
+    }
+    res.status(200).send(userResponse)
+  })
+};
+
 exports.moderatorPage = (req, res) => {
   res.status(200).send('Moderator Content');
 };

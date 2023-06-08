@@ -90,7 +90,7 @@ exports.activeTournamentUserData = (req, res) => {
 };
 
 exports.pastTournamentUserData = (req, res) => {
-  Tournament.findPastTournamentUser(req.userId, (err, data) => {
+  Tournament.findPastTournamentUser(req.params.id, (err, data) => {
     if (err) {
       res.status(500).send({
         message: 'Error finding a user\'s past tournaments',

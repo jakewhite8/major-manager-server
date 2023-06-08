@@ -63,6 +63,19 @@ module.exports = (connection) => {
     });
   };
 
+  User.getUserInformation = (id, result) => {
+    connection.query(`SELECT * from users WHERE id = ${id}`, (err, res) => {
+      if (err) {
+        handleError(err, result);
+        return;
+      }
+      if (res[0] && res[0].password) {
+        delete res[0].password
+      }
+      result(null, res);
+    });
+  }
+
   User.findRoles = (userId, result) => {
     connection.query('SELECT * FROM user_roles WHERE userId = ?', userId, (err, res) => {
       if (err) {

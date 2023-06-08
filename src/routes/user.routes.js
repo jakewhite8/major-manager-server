@@ -20,6 +20,11 @@ module.exports = function (app) {
   );
 
   app.get(
+    '/api/v1/user_info/:id',
+    controller.userInfo,
+  );
+
+  app.get(
     '/api/test/mod',
     [authJwt.verifyToken, authJwt.isModerator],
     controller.moderatorPage,
