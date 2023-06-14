@@ -47,7 +47,13 @@ module.exports = (connection) => {
 
   Tournament.concludedTournaments = (result) => {
     // Return IDs and the name of tournaments that have ended
-    connection.query('select * from tournaments where timestampdiff(hour, start_date, date_sub(current_timestamp(), interval 4 hour)) > 80;', (err, res) => {
+    let concludedTournamentsQuery = 'select * from tournaments where timestampdiff(hour, start_date, date_sub(current_timestamp(), interval 4 hour)) > 80'
+    if (process.env && process.env.NODE_ENV && process.env.NODE_ENV != "development") {
+      // Remove test Tournaments when not in development mode
+      concludedTournamentsQuery = concludedTournamentsQuery + ' and start_date > "1996-01-01 11:30:00"'
+    }
+    concludedTournamentsQuery = concludedTournamentsQuery + ';'
+    connection.query(concludedTournamentsQuery, (err, res) => {
       if (err) {
         handleError(err, result);
         return;
