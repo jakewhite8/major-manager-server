@@ -2,6 +2,15 @@ const db = require('../models');
 
 const User = db.user;
 
+exports.getNonAdmins = (req, res) => {
+  User.getNonAdmins((error, response) => {
+    if (error) {
+      res.status(500).send(error)
+    }
+    res.status(200).send(response)
+  })
+}
+
 exports.allAccess = (req, res) => {
   res.status(200).send('Public Content');
 };
