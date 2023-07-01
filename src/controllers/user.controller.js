@@ -12,6 +12,9 @@ exports.getNonAdmins = (req, res) => {
 }
 
 exports.addAdmin= (req, res) => {
+  if (!req.body.id) {
+    res.status(400).send('User ID required')
+  }
   User.addAdmin(req.body.id, (error, addAdminResponse) => {
     if (error) {
       res.status(500).send(err)
