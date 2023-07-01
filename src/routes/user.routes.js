@@ -43,6 +43,12 @@ module.exports = function (app) {
   );
 
   app.post(
+    '/api/v1/add_admin',
+    [authJwt.verifyToken, authJwt.isAdmin],
+    controller.addAdmin,
+  );
+
+  app.post(
     '/api/v1/upload_player_scores/:id',
     [authJwt.verifyToken, authJwt.isAdmin],
     adminController.uploadPlayerScores,

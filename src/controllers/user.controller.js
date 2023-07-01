@@ -11,6 +11,15 @@ exports.getNonAdmins = (req, res) => {
   })
 }
 
+exports.addAdmin= (req, res) => {
+  User.addAdmin(req.body.id, (error, addAdminResponse) => {
+    if (error) {
+      res.status(500).send(err)
+    }
+    res.status(200).send(addAdminResponse)
+  })
+};
+
 exports.allAccess = (req, res) => {
   res.status(200).send('Public Content');
 };

@@ -104,6 +104,17 @@ module.exports = (connection) => {
     });
   };
 
+  User.addAdmin = (userId, result) => {
+    // Query returns all Users that are assigned a User Role and not an Admin Role
+    connection.query(`INSERT INTO user_roles (userId, roleId) VALUES (${userId}, 3)`, (err, res) => {
+      if (err) {
+        handleError(err, result);
+        return;
+      }
+      result(null, res)
+    });
+  };
+
   User.getTeam = (userId, tournamentId, result) => {
     connection.query(`SELECT * FROM users_tournaments WHERE userId = ${userId} AND tournamentId = ${tournamentId}`, (getTeamErr, getTeamRes) => {
       if (getTeamErr) {
