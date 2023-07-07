@@ -123,10 +123,11 @@ module.exports = (connection) => {
     playerTournamentData, tournamentId, tournamentRound, result,
   ) => {
     // Find out what players need to be added to tournament table
-    const playerIds = [];
-    for (let i = 0; i < playerTournamentData.length; i += 1) {
-      playerIds.push(playerTournamentData[i].id);
-    }
+    // Array of all the IDs of the Players submitted from the client
+    const playerIds = playerTournamentData.map(player => player.id)
+
+    // Get all of the Players being added that are already in the players_tournaments table
+    // if not exists sql?
     connection.query(`SELECT * FROM players_tournaments where tournament_id = ${tournamentId} AND player_id IN (${playerIds.join(', ')})`, (selectTournamentErr, selectTournamentRes) => {
       if (selectTournamentErr) {
         handleError(selectTournamentErr, result);
@@ -146,16 +147,20 @@ module.exports = (connection) => {
       //   ...
       // ]
 
-      // Add new Players to players_tournament table
-      const newPlayers = playerIds;
-      for (let i = 0; i < selectTournamentRes.length; i += 1) {
-        const index = newPlayers.indexOf(selectTournamentRes[i].player_id);
-        if (index > -1) {
-          // Remove the Player that is already signed up for the tournament
-          newPlayers.splice(index, 1);
+      // Find players not in the players_tournaments table
+      function idsNotInPlayersTournamentsTable(playersInTournamentArray, allPlayerIds) {
+        const idSet = new Set(playersInTournamentArray.map(player => player.player_id))
+        const missingIds = [];
+        for (let i = 0; i < allPlayerIds.length; i++) {
+          const id = allPlayerIds[i]
+          if (!idSet.has(id)) {
+            missingIds.push(id)
+          }
         }
+        return missingIds
       }
 
+      const newPlayers = idsNotInPlayersTournamentsTable(selectTournamentRes, playerIds)
       if (newPlayers.length) {
         const newPlayerData = [];
         for (let i = 0; i < playerTournamentData.length; i += 1) {
