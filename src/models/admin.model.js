@@ -49,7 +49,7 @@ module.exports = (connection) => {
       const existingPlayersObject = {};
       for (let k = 0; k < selectPlayersRes.length; k += 1) {
         const existingPlayer = selectPlayersRes[k];
-        const playerProperty = `${existingPlayer.last_name.toLowerCase()} ${existingPlayer.first_name.toLowerCase()}`;
+        const playerProperty = `${existingPlayer.last_name.toLowerCase()}-${existingPlayer.first_name.toLowerCase()}`;
         existingPlayersObject[playerProperty] = {};
         existingPlayersObject[playerProperty].id = existingPlayer.id;
         existingPlayersObject[playerProperty].first_name = existingPlayer.first_name;
@@ -67,7 +67,7 @@ module.exports = (connection) => {
       // Array of new Players that will contain Player id, score, name
       const newPlayers = [];
       for (let index = 0; index < playerData.length; index += 1) {
-        const playerProperty = `${playerData[index].last_name.toLowerCase()} ${playerData[index].first_name.toLowerCase()}`;
+        const playerProperty = `${playerData[index].last_name.toLowerCase()}-${playerData[index].first_name.toLowerCase()}`;
         if (existingPlayersObject[playerProperty]) {
           // Player exists in database
           const playerDatabaseInfo = existingPlayersObject[playerProperty];
