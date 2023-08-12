@@ -122,7 +122,7 @@ module.exports = (connection) => {
   Admin.addPlayersToTournamentTable = (
     playerTournamentData, tournamentId, tournamentRound, result,
   ) => {
-    // Find out what players need to be added to tournament table
+    // Find out what players need to be added to tournament table.
     // Array of all the IDs of the Players submitted from the client
     const playerIds = playerTournamentData.map(player => player.id)
 
@@ -161,29 +161,8 @@ module.exports = (connection) => {
       }
 
       const newPlayers = idsNotInPlayersTournamentsTable(selectTournamentRes, playerIds)
-      if (newPlayers.length) {
-        const newPlayerData = [];
-        for (let i = 0; i < playerTournamentData.length; i += 1) {
-          const tier = playerTournamentData[i] && playerTournamentData[i].tier
-            ? playerTournamentData[i].tier : 6;
-          if (newPlayers.indexOf(playerTournamentData[i].id) > -1) {
-            newPlayerData.push([
-              playerTournamentData[i].id,
-              tournamentId,
-              playerTournamentData[i].score,
-              tier,
-            ]);
-          }
-        }
-        connection.query(`INSERT INTO players_tournaments(player_id, tournament_id, score, tier) VALUES(${newPlayerData.join('), (')})`, (insertTournamentErr, insertTournamentRes) => {
-          if (insertTournamentErr) {
-            handleError(insertTournamentErr, result);
-            return;
-          }
-          result(null, insertTournamentRes);
-        });
-      // Update Player's Tournament data
-      } else {
+
+      function updateTournamentScores(selectTournamentRes, playerTournamentData, tournamentId, tournamentRound, handleError, result) {
         // Make an array of Players that are already registered for the selected Tournament
         // with their players_tournaments id and their updated score
         // - Need player_tournament id so rows can be updated, not duplicated
@@ -229,6 +208,39 @@ module.exports = (connection) => {
             result(null, updateTournamentRes);
           });
         });
+      }
+
+      if (newPlayers.length) {
+        // Add new Players to the Tournament
+        const newPlayerData = [];
+        for (let i = 0; i < playerTournamentData.length; i += 1) {
+          const tier = playerTournamentData[i] && playerTournamentData[i].tier
+            ? playerTournamentData[i].tier : 6;
+          if (newPlayers.indexOf(playerTournamentData[i].id) > -1) {
+            newPlayerData.push([
+              playerTournamentData[i].id,
+              tournamentId,
+              playerTournamentData[i].score,
+              tier,
+            ]);
+          }
+        }
+        connection.query(`INSERT INTO players_tournaments(player_id, tournament_id, score, tier) VALUES(${newPlayerData.join('), (')})`, (insertTournamentErr, insertTournamentRes) => {
+          if (insertTournamentErr) {
+            handleError(insertTournamentErr, result);
+            return;
+          }
+ 
+          connection.query(`SELECT * FROM players_tournaments where tournament_id = ${tournamentId} AND player_id IN (${playerIds.join(', ')})`, (fullSelectTournamentErr, fullSelectTournamentRes) => {
+            if (fullSelectTournamentErr) {
+              handleError(fullSelectTournamentErr, result);
+              return;
+            }
+            updateTournamentScores(fullSelectTournamentRes, playerTournamentData, tournamentId, tournamentRound, handleError, result)
+          });
+        });
+      } else {
+        updateTournamentScores(selectTournamentRes, playerTournamentData, tournamentId, tournamentRound, handleError, result)
       }
     });
   };
