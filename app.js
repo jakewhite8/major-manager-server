@@ -25,7 +25,7 @@ app.use(cors(corsOptions));
 
 // Enables incoming requests to be decoded and parsed as json objects
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ encode: true }));
+app.use(bodyParser.urlencoded({ extended:true }))
 
 app.get('/', (req, res) => {
   res.status(200).send('Server can serve data');
