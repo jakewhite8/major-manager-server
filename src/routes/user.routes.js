@@ -36,6 +36,18 @@ module.exports = function (app) {
     controller.adminPage,
   );
 
+  app.get(
+    '/api/v1/non_admin_users',
+    [authJwt.verifyToken, authJwt.isAdmin],
+    controller.getNonAdmins,
+  );
+
+  app.post(
+    '/api/v1/add_admin',
+    [authJwt.verifyToken, authJwt.isAdmin],
+    controller.addAdmin,
+  );
+
   app.post(
     '/api/v1/upload_player_scores/:id',
     [authJwt.verifyToken, authJwt.isAdmin],

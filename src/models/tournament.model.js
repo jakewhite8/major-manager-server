@@ -73,11 +73,7 @@ module.exports = (connection) => {
         handleError(err, result);
         return;
       }
-      if (res.length) {
-        result(null, res);
-        return;
-      }
-      result({ kind: 'not found' }, null);
+      result(null, res)
     });
   };
 

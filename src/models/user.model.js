@@ -74,7 +74,7 @@ module.exports = (connection) => {
       }
       result(null, res);
     });
-  }
+  };
 
   User.findRoles = (userId, result) => {
     connection.query('SELECT * FROM user_roles WHERE userId = ?', userId, (err, res) => {
@@ -90,6 +90,28 @@ module.exports = (connection) => {
       }
 
       result({ kind: 'roles not found' }, null);
+    });
+  };
+
+  User.getNonAdmins = (result) => {
+    // Query returns all Users that are assigned a User Role and not an Admin Role
+    connection.query('SELECT users.id, users.team_name FROM users INNER JOIN user_roles ON users.id = user_roles.userId AND user_roles.roleId = 1 AND user_roles.userId NOT IN (SELECT userId FROM user_roles WHERE roleId = 3)', (err, res) => {
+      if (err) {
+        handleError(err, result);
+        return;
+      }
+      result(null, res)
+    });
+  };
+
+  User.addAdmin = (userId, result) => {
+    // Query returns all Users that are assigned a User Role and not an Admin Role
+    connection.query(`INSERT INTO user_roles (userId, roleId) VALUES (${userId}, 3)`, (err, res) => {
+      if (err) {
+        handleError(err, result);
+        return;
+      }
+      result(null, res)
     });
   };
 
