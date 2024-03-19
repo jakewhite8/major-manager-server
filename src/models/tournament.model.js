@@ -52,7 +52,7 @@ module.exports = (connection) => {
       // Remove test Tournaments when not in development mode
       concludedTournamentsQuery = concludedTournamentsQuery + ' and start_date > "1996-01-01 11:30:00"'
     }
-    concludedTournamentsQuery = concludedTournamentsQuery + ';'
+    concludedTournamentsQuery = concludedTournamentsQuery + 'order by start_date desc;'
     connection.query(concludedTournamentsQuery, (err, res) => {
       if (err) {
         handleError(err, result);
